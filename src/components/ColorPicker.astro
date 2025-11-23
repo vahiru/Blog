@@ -1,0 +1,167 @@
+---
+---
+
+<dialog id="theme-dialog" class="theme-dialog">
+  <div class="dialog-content">
+    <h3 class="dialog-title">Customize Theme</h3>
+    
+    <div class="color-section">
+      <p class="section-label">Preset Colors</p>
+      <div class="preset-colors">
+        <button class="color-btn" style="background-color: #6750a4;" data-color="#6750a4"></button>
+        <button class="color-btn" style="background-color: #9c4146;" data-color="#9c4146"></button>
+        <button class="color-btn" style="background-color: #006a6a;" data-color="#006a6a"></button>
+        <button class="color-btn" style="background-color: #5d5f00;" data-color="#5d5f00"></button>
+        <button class="color-btn" style="background-color: #006e1c;" data-color="#006e1c"></button>
+      </div>
+    </div>
+
+    <div class="color-section">
+      <p class="section-label">Custom Color</p>
+      <div class="custom-picker">
+        <input type="color" id="color-input" value="#6750a4" />
+        <label for="color-input">Pick a color</label>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <md-text-button id="close-dialog">Close</md-text-button>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .theme-dialog {
+    border: none;
+    border-radius: 28px;
+    padding: 0;
+    
+    /* ▼▼▼▼▼ 关键修复 ▼▼▼▼▼ */
+    /* 优先用 Container High，如果没有就用 Surface，还没有就用纯白/深灰 */
+    background-color: var(--md-sys-color-surface-container-high, var(--md-sys-color-surface, #1e1e1e));
+    /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+    
+    color: var(--md-sys-color-on-surface);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    min-width: 300px;
+    
+    /* 确保不透明 */
+    opacity: 1;
+    overflow: hidden; /* 防止圆角溢出 */
+  }
+  
+  /* 遮罩层样式 */
+  .theme-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px); /* 可选：加一点毛玻璃效果 */
+  }
+
+  .dialog-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    /* 确保内容也有背景，防止某些浏览器渲染问题 */
+    background: inherit; 
+  }
+
+  /* ... 其他样式保持不变 ... */
+  .dialog-title { margin: 0; font-size: 1.5rem; font-weight: 400; }
+  .section-label { font-size: 0.9rem; font-weight: 500; color: var(--md-sys-color-primary); margin-bottom: 12px; }
+  .preset-colors { display: flex; gap: 12px; flex-wrap: wrap; }
+  .color-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .color-btn:hover { transform: scale(1.1); }
+  .custom-picker { display: flex; align-items: center; gap: 12px; }
+  input[type="color"] { border: none; width: 48px; height: 48px; cursor: pointer; background: none; }
+  .dialog-actions { display: flex; justify-content: flex-end; }
+</style>
+
+<script>
+
+  // 引入组件
+  import '@material/web/icon/icon.js';
+  import '@material/web/iconbutton/icon-button.js';
+  import '@material/web/button/text-button.js';
+  
+  // 引入颜色算法
+  import { argbFromHex, themeFromSourceColor, hexFromArgb } from "@material/material-color-utilities";
+
+  function applyTheme(hexColor) {
+    localStorage.setItem('source-color', hexColor);
+    const isDark = document.documentElement.classList.contains('dark');
+    const theme = themeFromSourceColor(argbFromHex(hexColor));
+    const scheme = isDark ? theme.schemes.dark : theme.schemes.light;
+    const body = document.body;
+    
+    const tokenMap = {
+      primary: 'primary', onPrimary: 'on-primary',
+      primaryContainer: 'primary-container', onPrimaryContainer: 'on-primary-container',
+      secondary: 'secondary', onSecondary: 'on-secondary',
+      secondaryContainer: 'secondary-container', onSecondaryContainer: 'on-secondary-container',
+      surface: 'surface', onSurface: 'on-surface',
+      surfaceContainer: 'surface-container',
+      surfaceContainerHigh: 'surface-container-high',
+    };
+
+    for (const [key, token] of Object.entries(tokenMap)) {
+        // @ts-ignore
+        if (scheme[key]) {
+            const colorHex = hexFromArgb(scheme[key]);
+            body.style.setProperty(`--md-sys-color-${token}`, colorHex);
+        }
+    }
+  }
+
+  // 绑定颜色点击
+  document.querySelectorAll('.color-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      // @ts-ignore
+      const color = e.target.getAttribute('data-color');
+      applyTheme(color);
+    });
+  });
+
+  // 绑定取色器
+  const colorInput = document.getElementById('color-input');
+  colorInput?.addEventListener('input', (e) => {
+    // @ts-ignore
+    applyTheme(e.target.value);
+  });
+
+  // 初始化
+  const savedColor = localStorage.getItem('source-color');
+  if (savedColor) {
+    applyTheme(savedColor);
+    // @ts-ignore
+    if(colorInput) colorInput.value = savedColor;
+  }
+
+  // 关闭弹窗逻辑
+  const dialog = document.getElementById('theme-dialog');
+  const closeBtn = document.getElementById('close-dialog');
+
+  closeBtn?.addEventListener('click', () => {
+    // @ts-ignore
+    dialog?.close();
+  });
+
+  dialog?.addEventListener('click', (e) => {
+    const rect = dialog.getBoundingClientRect();
+    if (e.clientX < rect.left || e.clientX > rect.right || 
+        e.clientY < rect.top || e.clientY > rect.bottom) {
+      // @ts-ignore
+      dialog.close();
+    }
+  });
+  
+  // 监听暗色切换，重新计算
+  const observer = new MutationObserver(() => {
+     const currentColor = localStorage.getItem('source-color') || '#6750a4';
+     applyTheme(currentColor);
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+</script>

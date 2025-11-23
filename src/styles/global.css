@@ -1,0 +1,87 @@
+/* src/styles/global.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --sidebar-width: 88px; 
+  --md-icon-font: 'Material Symbols Rounded';
+
+  /* === Light Mode 颜色修正 (增加对比度) === */
+  --md-sys-color-primary: #6750a4;
+  --md-sys-color-on-primary: #ffffff;
+  
+  /* Hero 卡片背景：必须是有颜色的 */
+  --md-sys-color-primary-container: #eaddff; 
+  --md-sys-color-on-primary-container: #21005d;
+  
+  --md-sys-color-secondary-container: #e8def8;
+  --md-sys-color-on-secondary-container: #1d192b;
+  
+  /* 网页最底层背景：纯白 */
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-on-surface: #1c1b1f;
+  
+  /* 右侧大容器背景：浅灰色 (关键！不能是纯白，否则看不出卡片) */
+  --md-sys-color-surface-container: #f3edf7; 
+  
+  --md-sys-color-surface-variant: #e7e0ec;
+  --md-sys-color-on-surface-variant: #49454f;
+}
+
+/* === Dark Mode 颜色 (保持你觉得好看的那套) === */
+.dark {
+  --md-sys-color-primary: #d0bcff;
+  --md-sys-color-on-primary: #381e72;
+  --md-sys-color-primary-container: #4f378b;
+  --md-sys-color-on-primary-container: #eaddff;
+  --md-sys-color-secondary-container: #4a4458;
+  --md-sys-color-on-secondary-container: #e8def8;
+  --md-sys-color-surface: #141218;
+  --md-sys-color-on-surface: #e6e1e5;
+  --md-sys-color-surface-container: #1d1b20;
+  --md-sys-color-surface-variant: #49454f;
+  --md-sys-color-on-surface-variant: #cac4d0;
+}
+
+/* 全局重置 */
+body {
+  margin: 0; padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  height: 100vh; width: 100vw;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* ▼▼▼▼▼ 【关键修复】全局清除按钮默认样式 ▼▼▼▼▼ */
+button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
+a { text-decoration: none; color: inherit; }
+
+/* 防止组件未加载时闪烁 */
+md-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; height: 24px;
+  font-family: 'Material Symbols Rounded' !important;
+  overflow: hidden;
+}
+
+/* 隐藏未定义的自定义元素 */
+:not(:defined) {
+  visibility: hidden;
+}
