@@ -1,26 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
-// Data setup remains the same
+
 const posts = [
-  {
-    title: "Hello World",
-    url: "#",
-    date: "2025-11-22",
-    cover: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
-  },
-  {
-    title: "Building with Astro & Material Web",
-    url: "#",
-    date: "2025-11-23",
-    cover: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1352&q=80"
-  },
-  {
-    title: "This is a test without cover image",
-    url: "#",
-    date: "2025-11-24",
-    cover: ""
-  }
+  { title: "Hello World", url: "#", date: "2025-11-22", cover: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80" },
+  { title: "Building with Astro & Material Web", url: "#", date: "2025-11-23", cover: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1352&q=80" },
+  { title: "This is a test without cover image", url: "#", date: "2025-11-24", cover: "" }
 ];
 ---
 
@@ -28,90 +13,61 @@ const posts = [
   
   <section class="hero-card">
     <div class="hero-content">
-      <h1 class="hero-title display-extra-large">Welcome to My Blog</h1>
-      <p class="hero-desc">
-        Built with Astro and Material Web Components. Blazing fast and stylish.
-      </p>
+      <h1 class="hero-title display-medium">Welcome to My Blog</h1>
+      <p class="hero-desc">Built with Astro and Material Web Components. Blazing fast and stylish.</p>
       
       <md-elevated-button href="/about" class="hero-button">
         Get Started
         <md-icon slot="icon">arrow_forward</md-icon>
       </md-elevated-button>
     </div>
-    </section>
+  </section>
 
   <h2 class="section-title">Recent Posts</h2>
 
   <div class="post-grid">
     {posts.map((post) => (
-      <PostCard 
-        title={post.title} 
-        url={post.url} 
-        date={post.date}
-        cover={post.cover}
-      />
+      <PostCard title={post.title} url={post.url} date={post.date} cover={post.cover} />
     ))}
   </div>
 </Layout>
 
 <style>
-  /* === HERO CARD STYLES === */
   .hero-card {
-    /* 基础样式 */
+    background-image: radial-gradient(circle at 50% 10%, var(--md-sys-color-surface-container-high) 1%, var(--md-sys-color-primary-container) 70%);
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
-    border-radius: 28px;
-    padding: 4rem 3rem; 
-    margin-bottom: 3rem;
-    position: relative; 
-    overflow: hidden; 
-    display: block; /* 确保是块级元素 */
-    
-    /* ▼▼▼▼▼ 核心：微妙的径向渐变，模拟自然光照 ▼▼▼▼▼ */
-    /* 让卡片中心稍亮，边缘稍暗，增加层次感 */
-    background-image: radial-gradient(circle at 50% 10%, 
-                                      /* 使用比容器色亮一点的 surface-container-high */
-                                      var(--md-sys-color-surface-container-high) 1%, 
-                                      /* 边缘过渡到容器色 */
-                                      var(--md-sys-color-primary-container) 70%);
+    border-radius: 28px; padding: 4rem 3rem; margin-bottom: 3rem;
+    position: relative; overflow: hidden; display: block;
   }
-  
-  .hero-content {
-    /* 保持简单，不限制宽度 */
-    max-width: 800px;
-  }
-  
-  .hero-title {
-    /* 【优化】使用自定义大字号 */
-    font-size: 4rem; 
-    margin: 0 0 1.5rem 0;
-    font-weight: 500;
-    line-height: 1.1;
-  }
-
-  .hero-desc {
-    font-size: 1.3rem;
-    margin-bottom: 3rem;
-    opacity: 0.9;
-  }
-
-  /* === 按钮修正 (保持深色填充) === */
+  .hero-content { max-width: 800px; }
+  .hero-title { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 500; }
+  .hero-desc { font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.9; }
   .hero-button {
     --md-elevated-button-container-color: var(--md-sys-color-primary);
     --md-elevated-button-label-text-color: var(--md-sys-color-on-primary);
     --md-icon-color: var(--md-sys-color-on-primary);
   }
 
-  /* === POST GRID & LAYOUT STYLES === */
-  .section-title {
-    margin: 2rem 0 1.5rem 0.5rem;
-    font-size: 1.75rem;
-    font-weight: 500;
-  }
+  .section-title { margin: 2rem 0 1.5rem 0.5rem; font-size: 1.75rem; font-weight: 500; }
 
+  /* === Grid 布局 === */
   .post-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;
+    /* 桌面端：最少 300px 一列 */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  /* === 移动端适配 (关键修复) === */
+  @media (max-width: 992px) {
+    .post-grid {
+      /* 强制单列，宽度 100% 填满父容器 */
+      grid-template-columns: 1fr;
+    }
+    
+    /* 顺便缩小一点 Hero 卡片的 Padding，防止手机上太占地 */
+    .hero-card { padding: 2rem; margin-bottom: 2rem; }
+    .hero-title { font-size: 2.5rem; }
   }
 </style>
