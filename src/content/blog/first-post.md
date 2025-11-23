@@ -1,13 +1,17 @@
 ---
-title: 'My First Blog Post'
-pubDate: 2025-11-23
-description: 'This is the first post on my new Astro blog.'
-author: 'Astro Coder'
-tags: ["astro", "blogging", "learning in public"]
+title: My First Astro + MD3 Post
+description: This is the inaugural post demonstrating Web Components SSR support.
+pubDate: 2025-11-25T10:00:00Z
+cover: /images/sample-cover.jpg
+tags: ['astro', 'md3', 'frontend']
 ---
 
-## Welcome to my new blog!
+## 欢迎来到 Material Design 3 博客
 
-This is a sample post written in Markdown. Astro will convert this to HTML.
-I'm excited to be using Astro for my new blog. It's fast and easy to use.
-I'm also using Material Web components to give it a modern look and feel.
+这篇博文证明了我们的 Astro 架构已成功运行。
+
+**关键点：**
+
+1.  **性能：** 由于使用了 SSR，页面加载极快。
+2.  **样式：** 所有卡片和按钮都遵循动态色彩主题。
+

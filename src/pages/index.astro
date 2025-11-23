@@ -1,23 +1,36 @@
 ---
+// ==================================================
+// 🔴 服务端代码区域 (Frontmatter)
+// 必须包裹在上下两个 "---" 之间，这里才支持顶层 await
+// ==================================================
+
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
 
-const posts = [
-  { title: "Hello World", url: "#", date: "2025-11-22", cover: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80" },
-  { title: "Building with Astro & Material Web", url: "#", date: "2025-11-23", cover: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1352&q=80" },
-  { title: "This is a test without cover image", url: "#", date: "2025-11-24", cover: "" }
-];
+// 1. 获取文章 (await 必须在这里使用)
+const allPosts = await getCollection('blog');
+
+// 2. 处理排序 (加入防崩逻辑)
+const posts = allPosts
+  .filter((post) => !post.data.draft) // 过滤草稿
+  .sort((a, b) => {
+    // 安全获取时间戳，防止没有日期的文章报错
+    const dateA = a.data.date ? new Date(a.data.date).valueOf() : 0;
+    const dateB = b.data.date ? new Date(b.data.date).valueOf() : 0;
+    return dateB - dateA; // 降序：新的在前
+  });
 ---
 
-<Layout title="My Material Blog">
+<Layout title="我的博客 | Astro MD3">
   
   <section class="hero-card">
     <div class="hero-content">
-      <h1 class="hero-title display-medium">Welcome to My Blog</h1>
-      <p class="hero-desc">Built with Astro and Material Web Components. Blazing fast and stylish.</p>
-      
-      <md-elevated-button href="/about" class="hero-button">
-        Get Started
+      <h1 class="hero-title display-medium">Here is Vahiru's blog</h1>
+      <p class="hero-desc">实在编不出来了就随便写点啥</p>
+    
+      <md-elevated-button href="/archives" class="hero-button">
+        About Me
         <md-icon slot="icon">arrow_forward</md-icon>
       </md-elevated-button>
     </div>
@@ -27,46 +40,73 @@ const posts = [
 
   <div class="post-grid">
     {posts.map((post) => (
-      <PostCard title={post.title} url={post.url} date={post.date} cover={post.cover} />
+      <PostCard post={post} />
     ))}
+
+    {posts.length === 0 && (
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; opacity: 0.6;">
+        还没有文章，请在 src/content/blog/ 下创建 .md 文件
+      </div>
+    )}
   </div>
+
 </Layout>
 
 <style>
+  /* === HERO 样式 === */
   .hero-card {
-    background-image: radial-gradient(circle at 50% 10%, var(--md-sys-color-surface-container-high) 1%, var(--md-sys-color-primary-container) 70%);
+    background-image: radial-gradient(circle at 50% 10%, 
+                                      var(--md-sys-color-surface-container-high) 1%, 
+                                      var(--md-sys-color-primary-container) 70%);
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
-    border-radius: 28px; padding: 4rem 3rem; margin-bottom: 3rem;
-    position: relative; overflow: hidden; display: block;
+    border-radius: 28px;
+    padding: 4rem 3rem; 
+    margin-bottom: 3rem;
+    position: relative; 
+    overflow: hidden; 
+    display: block;
   }
+  
   .hero-content { max-width: 800px; }
-  .hero-title { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 500; }
-  .hero-desc { font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.9; }
+  
+  .hero-title {
+    font-size: 3rem; 
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+  }
+
+  .hero-desc {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
   .hero-button {
     --md-elevated-button-container-color: var(--md-sys-color-primary);
     --md-elevated-button-label-text-color: var(--md-sys-color-on-primary);
     --md-icon-color: var(--md-sys-color-on-primary);
   }
 
-  .section-title { margin: 2rem 0 1.5rem 0.5rem; font-size: 1.75rem; font-weight: 500; }
+  /* === 列表样式 === */
+  .section-title {
+    margin: 2rem 0 1.5rem 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 500;
+  }
 
-  /* === Grid 布局 === */
   .post-grid {
     display: grid;
     gap: 24px;
-    /* 桌面端：最少 300px 一列 */
+    /* 桌面端：自适应列宽 */
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 
-  /* === 移动端适配 (关键修复) === */
+  /* 移动端适配 */
   @media (max-width: 992px) {
     .post-grid {
-      /* 强制单列，宽度 100% 填满父容器 */
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr; /* 强制单列 */
     }
-    
-    /* 顺便缩小一点 Hero 卡片的 Padding，防止手机上太占地 */
     .hero-card { padding: 2rem; margin-bottom: 2rem; }
     .hero-title { font-size: 2.5rem; }
   }

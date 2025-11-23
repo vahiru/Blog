@@ -1,0 +1,120 @@
+---
+// src/components/PostCard.astro
+import '@material/web/card/filled-card.js';
+import '@material/web/button/filled-button.js';
+import '@material/web/button/text-button.js';
+
+import type { CollectionEntry } from 'astro:content';
+
+// 定义组件接收的属性类型
+export interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+
+// 格式化日期，方便阅读
+const formattedDate = new Date(post.data.pubDate).toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// 构建文章链接，使用 Astro 的 slug
+const postUrl = `/blog/${post.slug}`;
+---
+
+<md-filled-card class="post-card">
+  {post.data.cover && (
+    <img src={post.data.cover} alt={post.data.title} class="cover-image" />
+  )}
+
+  <div class="content">
+    <h2 class="title">{post.data.title}</h2>
+    <p class="date">{formattedDate}</p>
+    {post.data.description && (
+      <p class="description">{post.data.description}</p>
+    )}
+    
+    <div class="tags">
+      {post.data.tags?.map((tag) => (
+        <span class="tag">{tag}</span>
+      ))}
+    </div>
+
+    <div class="actions">
+      <a href={postUrl} aria-label={`阅读文章: ${post.data.title}`}>
+        <md-text-button>阅读全文</md-text-button>
+      </a>
+    </div>
+  </div>
+</md-filled-card>
+
+<style>
+  .post-card {
+    /* 确保卡片占据完整宽度并添加底部间距 */
+    display: block;
+    width: 100%;
+    margin-bottom: 24px; 
+    
+    /* 覆盖 Web Component 内部的样式，使其更贴合 MD3 规范 */
+    --md-filled-card-container-shape: 12px; /* 圆角 */
+    
+    /* 设置卡片的宽度限制，以匹配布局中的内容区域 */
+    max-width: 800px; /* 假设内容区域最大宽度 */
+  }
+
+  .content {
+    /* 填充间距 */
+    padding: 16px 20px;
+  }
+  
+  .cover-image {
+    width: 100%;
+    /* 确保图片在卡片顶部平滑过渡 */
+    border-radius: 12px 12px 0 0;
+    max-height: 200px;
+    object-fit: cover;
+  }
+
+  .title {
+    font-size: var(--md-sys-typescale-headline-small-font-size);
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .date {
+    font-size: var(--md-sys-typescale-body-small-font-size);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 12px;
+  }
+
+  .description {
+    font-size: var(--md-sys-typescale-body-large-font-size);
+    color: var(--md-sys-color-on-surface);
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tag {
+    /* 使用 MD3 的 Surface 变体来模拟 Chip 样式 */
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: var(--md-sys-typescale-label-medium-font-size);
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+</style>
