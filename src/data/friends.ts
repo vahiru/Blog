@@ -10,6 +10,18 @@ export interface Friend {
 
 export const friendsData: Friend[] = [
     { 
+    name: "Restent Ou", 
+    desc: "Secret with Silent", 
+    avatar: "https://library.gxres.net/images/icons/gxres042.webp",
+    url: "https://www.gxres.net"
+    },
+    { 
+    name: "Mashirl's Blog", 
+    desc: "Keep it simple, stupid!", 
+    avatar: "https://mashirl.com/images/avatar.jpg",
+    url: "https://mashirl.com/"
+    },
+    { 
     name: "風雪城", 
     desc: "浩繁星空下的一场稚嫩的梦", 
     avatar: "https://imgsrc.chyk.ink/8mQ9M-dZdj9pJaTx.webp",
@@ -20,5 +32,5 @@ export const friendsData: Friend[] = [
     desc: "我们生活在大地上，但我们的梦想超越天空", 
     avatar: "https://lfs.libmbr.com/assets/pics/LG4v5Ravatar180px.webp",
     url: "https://www.libmbr.com/"
-  }
+    }
 ];
