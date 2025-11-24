@@ -1,7 +1,7 @@
 ---
 title: My First Astro + MD3 Post
 description: This is the inaugural post demonstrating Web Components SSR support.
-pubDate: 2025-11-25T10:00:00Z
+date: 2025-11-25T10:00:00Z
 cover: https://qianlianwanhua.com/111.webp
 tags: ['astro', 'md3', 'frontend']
 slug: first-post

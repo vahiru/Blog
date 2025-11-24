@@ -5,10 +5,9 @@
 
 :root {
   --sidebar-width: 88px;
-  --header-height: 64px;
   --md-icon-font: 'Material Symbols Rounded';
 
-  /* Light Colors */
+  /* Colors (Light) */
   --md-sys-color-primary: #6750a4;
   --md-sys-color-on-primary: #ffffff;
   --md-sys-color-primary-container: #eaddff;
@@ -27,7 +26,7 @@
 }
 
 .dark {
-  /* Dark Colors */
+  /* Colors (Dark) */
   --md-sys-color-primary: #d0bcff;
   --md-sys-color-on-primary: #381e72;
   --md-sys-color-primary-container: #4f378b;
@@ -44,48 +43,38 @@
   --md-sys-color-outline-variant: #49454f;
 }
 
-/* === 默认 (桌面端) 布局逻辑 === */
+/* === 全局重置 === */
 body {
   margin: 0; padding: 0;
   font-family: 'Roboto', sans-serif;
   background-color: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
   
-  /* 【关键】桌面端锁死 Body，防止双滚动条 */
+  /* 桌面端默认 Grid 布局 */
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: 100vh;
+  
   height: 100vh; 
   width: 100vw;
-  overflow: hidden; 
+  overflow: hidden; /* Body 不滚动 */
   
-  display: flex;
-  flex-direction: column;
-  transition: background-color 0.3s;
+  /* 【关键修复】强制顶对齐，防止内容垂直居中 */
+  align-items: start; 
+  justify-content: start;
 }
+
+button { border: none; background: transparent; padding: 0; margin: 0; font-family: inherit; cursor: pointer; }
+a { text-decoration: none; color: inherit; }
+md-icon { display: inline-flex; width: 24px; height: 24px; overflow: hidden; font-family: 'Material Symbols Rounded' !important; }
+:not(:defined) { visibility: hidden; }
 
 /* === 移动端适配 (<= 992px) === */
 @media (max-width: 992px) {
   body {
-    display: block !important;
-    
-    /* 【关键】移动端允许 Body 滚动，高度自动 */
+    display: block !important; /* 取消 Grid */
     height: auto !important;
-    min-height: 100vh;
-    overflow-y: auto !important;
+    overflow-y: auto !important; /* 允许 Body 滚动 */
     overflow-x: hidden;
   }
 }
-
-/* 基础重置 */
-body {
-  margin: 0; padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  /* 移动端默认允许滚动 */
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-button { border: none; background: transparent; padding: 0; cursor: pointer; font-family: inherit; color: inherit; }
-a { text-decoration: none; color: inherit; }
-md-icon { display: inline-flex; width: 24px; height: 24px; overflow: hidden; font-family: 'Material Symbols Rounded' !important; }
-:not(:defined) { visibility: hidden; }

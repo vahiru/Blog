@@ -12,6 +12,8 @@
     "@material/material-color-utilities": "^0.3.0",
     "@material/web": "^2.4.1",
     "astro": "^5.16.0",
+    "fuse.js": "^7.1.0",
+    "striptags": "^3.2.0",
     "typescript": "^5.9.3"
   }
 }

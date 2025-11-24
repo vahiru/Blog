@@ -1,10 +1,9 @@
 ---
 title: "here is a test"
 date: "2025-09-02"
-slug: test
-cover: "https://qianlianwanhua.com/111.webp"
+slug: "test"
 categories: 
-  - "每月进度公示"
+  - "test"
 ---
 
 # Gemini CLI
@@ -15,7 +14,6 @@ categories:
 [![License](https://img.shields.io/github/license/google-gemini/gemini-cli)](https://github.com/google-gemini/gemini-cli/blob/main/LICENSE)
 <a href="https://codewiki.google/github.com/google-gemini/gemini-cli"><img src="https://www.gstatic.com/_/boq-sdlc-agents-ui/_/r/Mvosg4klCA4.svg" alt="Ask Code Wiki" height="20"></a>
 
-![Gemini CLI Screenshot](./docs/assets/gemini-screenshot.png)
 
 Gemini CLI is an open-source AI agent that brings the power of Gemini directly
 into your terminal. It provides lightweight access to Gemini, giving you the
