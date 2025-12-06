@@ -4,141 +4,215 @@ import '@material/web/icon/icon.js';
 const year = new Date().getFullYear();
 ---
 
-<div class="footer-divider"></div>
+<div class="footer-wave-wrapper">
+  <div class="footer-wave" aria-hidden="true"></div>
+</div>
 
 <footer class="site-footer">
-  <div class="footer-content-wrapper">
+  <div class="footer-inner">
     
-    <div class="footer-section footer-intro">
-      <div class="brand-logo">
-        <md-icon class="logo-icon">auto_awesome</md-icon>
-        <span class="logo-text">Vahiru's Blog</span>
-      </div>
-      <p class="tagline">
-        记录技术、生活与热爱。<br>
-        Powered by Astro & Material Design 3.
-      </p>
-    </div>
-
-    <div class="footer-links-grid">
+    <div class="footer-body">
       
-      <div class="links-group">
-        <h4 class="group-title">Explore</h4>
-        <a href="/" class="footer-link">Home</a>
-        <a href="/archives" class="footer-link">Archives</a>
-        <a href="/about" class="footer-link">About</a>
-        <a href="/friends" class="footer-link">Friends</a>
+      <div class="footer-brand">
+        <div class="brand-header">
+          <span class="brand-name">Vahiru's Blog</span>
+        </div>
+        <p class="brand-slogan">
+         愿你能被这个世界温柔以待，愿你我皆能在时光中安然前行。
+        </p>
       </div>
 
-      <div class="links-group">
-        <h4 class="group-title">Connect</h4>
-        <a href="https://github.com/你的用户名" target="_blank" class="footer-link">GitHub</a>
-        <a href="/rss.xml" target="_blank" class="footer-link">RSS Feed</a>
-        <a href="mailto:your-email@example.com" class="footer-link">Email</a>
+      <nav class="footer-nav">
+        
+        <div class="nav-column">
+          <h3 class="nav-title">Social</h3>
+          <ul class="nav-list">
+            <li><a href="https://github.com/yourname" target="_blank">GitHub</a></li>
+            <li><a href="#">X (Twitter)</a></li>
+            <li><a href="#">YouTube</a></li>
+            <li><a href="/rss.xml">Blog RSS</a></li>
+          </ul>
+        </div>
+
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="copyright">
+        &copy; {year} Vahiru. All rights reserved.
       </div>
-
+      
+      <div class="theme-credit">
+        Theme <a href="https://github.com/vahiru/Astro-Mochi-Tones" target="_blank">Mochi Tones</a>
+      </div>
     </div>
 
-  </div>
-
-  <div class="footer-bottom-bar">
-    <div class="bottom-bar-inner">
-        <p class="copyright">© {year} Vahiru. All rights reserved.</p>
-        <p class="theme-credit">Theme <a href="https://github.com/你的用户名/Astro-Mochi-Tones" target="_blank">Mochi Tones</a></p>
-    </div>
   </div>
 </footer>
 
 <style>
-  /* === 关键修复：波浪线 === */
-  .footer-divider {
+  /* === 1. 顶部波浪线 (带强力投影) === */
+  .footer-wave-wrapper {
     width: 100%;
-    height: 20px; /* 波浪的高度 */
-    margin-top: auto; /* 推到底部 */
+    margin-top: 80px;
+    /* 关键：给波浪加阴影，制造“覆盖在页面上”的层级感 */
+    filter: drop-shadow(0 -6px 10px rgba(0, 0, 0, 0.08));
+    position: relative;
+    z-index: 10;
+  }
+
+  .footer-wave {
+    width: 100%;
+    height: 15px;
     
-    /* 使用径向渐变画一个个小半圆 */
+    /* 核心颜色：必须与 footer 背景一致 (Secondary Container) */
     background-image: radial-gradient(
       circle at 10px -5px, 
       transparent 12px, 
-      var(--md-sys-color-surface-container-high) 13px
+      var(--md-sys-color-secondary-container) 13px
     );
-    background-size: 20px 20px; /* 控制波浪的密集程度 */
+    background-size: 20px 20px;
     background-repeat: repeat-x;
+    background-position: bottom;
+    
+    display: block;
+    position: relative;
+    top: 1px;
   }
 
-  /* === 页脚主体 === */
+  /* === 2. 页脚容器 === */
   .site-footer {
-    /* 关键修复：颜色加深一级 (High)，与正文区分开 */
-    background-color: var(--md-sys-color-surface-container-high);
-    color: var(--md-sys-color-on-surface);
-    width: 100%;
-    padding-top: 24px;
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font-family: 'Roboto', sans-serif;
+    padding-bottom: 32px;
   }
 
-  /* 内容布局 (保持不变) */
-  .footer-content-wrapper {
-    max-width: 1200px;
+  .footer-inner {
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 0 24px 48px 24px;
+    padding: 0 40px;
+  }
+
+  /* === 3. 主体布局 === */
+  .footer-body {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
+    padding-top: 48px;
+    padding-bottom: 40px;
     gap: 40px;
+    flex-wrap: wrap;
   }
 
-  .footer-intro {
-    max-width: 360px;
-    display: flex; flex-direction: column; gap: 16px;
+  /* 左侧：品牌 */
+  .footer-brand {
+    max-width: 400px;
   }
 
-  .brand-logo {
+  .brand-header {
     display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+    /* 这里的文字颜色要跟随容器变化 */
+    color: var(--md-sys-color-on-secondary-container);
+  }
+  .brand-icon { font-size: 32px; width: 32px; height: 32px; color: var(--md-sys-color-primary); }
+  .brand-name { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.5px; }
+
+  .brand-slogan {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--md-sys-color-on-secondary-container);
+    opacity: 0.8;
+  }
+
+  /* 右侧：导航组 */
+  .footer-nav {
+    display: flex;
+    gap: 80px;
+  }
+
+  .nav-column {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  .nav-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--md-sys-color-on-secondary-container);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+  }
+
+  /* === 4. 列表样式重置 === */
+  ul.nav-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-list li {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .nav-list a {
+    text-decoration: none;
+    font-size: 0.95rem;
+    /* 使用 on-secondary-container 确保对比度 */
+    color: var(--md-sys-color-on-secondary-container);
+    position: relative;
+    opacity: 0.75; /* 稍微淡一点 */
+    transition: opacity 0.2s, color 0.2s;
+  }
+  
+  .nav-list a:hover {
+    opacity: 1;
+    text-decoration: underline;
     color: var(--md-sys-color-primary);
   }
-  
-  .logo-icon { font-size: 28px; }
-  .logo-text { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; }
 
-  .tagline {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.9rem; line-height: 1.6; margin: 0;
-  }
-
-  .footer-links-grid {
-    display: flex; gap: 64px; flex-wrap: wrap;
-  }
-
-  .links-group { display: flex; flex-direction: column; gap: 12px; }
-
-  .group-title {
-    font-size: 0.85rem; font-weight: 600; text-transform: uppercase;
-    color: var(--md-sys-color-on-surface); opacity: 0.8; margin: 0 0 4px 0;
-  }
-
-  .footer-link {
-    text-decoration: none; color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.95rem; transition: color 0.2s;
-  }
-  .footer-link:hover { color: var(--md-sys-color-primary); text-decoration: underline; }
-
-  .footer-bottom-bar {
-    border-top: 1px solid var(--md-sys-color-outline-variant);
-    padding: 16px 24px 24px 24px;
+  /* === 5. 底部版权行 === */
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    /* 极淡的分割线，颜色适配 */
+    border-top: 1px solid rgba(0,0,0,0.08);
+    
     font-size: 0.85rem;
-    color: var(--md-sys-color-on-surface-variant);
-    background-color: rgba(0,0,0,0.02);
+    color: var(--md-sys-color-on-secondary-container);
+    opacity: 0.8;
   }
 
-  .bottom-bar-inner {
-    max-width: 1200px; margin: 0 auto;
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+  .theme-credit a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 500;
   }
-  
-  .theme-credit a { color: inherit; font-weight: 500; text-decoration: none; }
+  .theme-credit a:hover {
+    text-decoration: underline;
+    color: var(--md-sys-color-primary);
+  }
 
-  @media (max-width: 768px) {
-    .footer-content-wrapper { flex-direction: column; gap: 32px; }
-    .footer-links-grid { gap: 40px; width: 100%; justify-content: space-between; }
-    .bottom-bar-inner { flex-direction: column; align-items: flex-start; }
+  /* === 移动端适配 === */
+  @media (max-width: 900px) {
+    .footer-body { flex-direction: column; gap: 40px; }
+    .footer-nav { 
+        justify-content: flex-start; 
+        flex-wrap: wrap; 
+        gap: 40px; 
+    }
+    .footer-bottom { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 16px; 
+    }
   }
 </style>
