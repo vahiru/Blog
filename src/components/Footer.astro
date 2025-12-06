@@ -1,86 +1,144 @@
 ---
 // src/components/Footer.astro
+import '@material/web/icon/icon.js';
 const year = new Date().getFullYear();
 ---
 
+<div class="footer-divider"></div>
+
 <footer class="site-footer">
-  <div class="footer-content">
-    <div class="copyright">
-      © {year} Vahiru's Blog. 保留所有权利。
+  <div class="footer-content-wrapper">
+    
+    <div class="footer-section footer-intro">
+      <div class="brand-logo">
+        <md-icon class="logo-icon">auto_awesome</md-icon>
+        <span class="logo-text">Vahiru's Blog</span>
+      </div>
+      <p class="tagline">
+        记录技术、生活与热爱。<br>
+        Powered by Astro & Material Design 3.
+      </p>
     </div>
-    <nav class="footer-links" aria-label="Footer Navigation">
-      <a href="https://github.com/vahiru" target="_blank" rel="noopener noreferrer" class="footer-link">
-        GitHub <md-icon class="external-icon">open_in_new</md-icon>
-      </a>
-    </nav>
+
+    <div class="footer-links-grid">
+      
+      <div class="links-group">
+        <h4 class="group-title">Explore</h4>
+        <a href="/" class="footer-link">Home</a>
+        <a href="/archives" class="footer-link">Archives</a>
+        <a href="/about" class="footer-link">About</a>
+        <a href="/friends" class="footer-link">Friends</a>
+      </div>
+
+      <div class="links-group">
+        <h4 class="group-title">Connect</h4>
+        <a href="https://github.com/你的用户名" target="_blank" class="footer-link">GitHub</a>
+        <a href="/rss.xml" target="_blank" class="footer-link">RSS Feed</a>
+        <a href="mailto:your-email@example.com" class="footer-link">Email</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer-bottom-bar">
+    <div class="bottom-bar-inner">
+        <p class="copyright">© {year} Vahiru. All rights reserved.</p>
+        <p class="theme-credit">Theme <a href="https://github.com/你的用户名/Astro-Mochi-Tones" target="_blank">Mochi Tones</a></p>
+    </div>
   </div>
 </footer>
 
-<script>
-    import '@material/web/icon/icon.js';
-</script>
-
 <style>
-  .site-footer {
-    background-color: var(--md-sys-color-surface-container);
-    color: var(--md-sys-color-on-surface-variant);
-    padding: 24px 0;
-    margin-top: auto; /* 确保页脚位于页面底部 */
-    border-top: 1px solid var(--md-sys-color-outline-variant);
+  /* === 关键修复：波浪线 === */
+  .footer-divider {
+    width: 100%;
+    height: 20px; /* 波浪的高度 */
+    margin-top: auto; /* 推到底部 */
+    
+    /* 使用径向渐变画一个个小半圆 */
+    background-image: radial-gradient(
+      circle at 10px -5px, 
+      transparent 12px, 
+      var(--md-sys-color-surface-container-high) 13px
+    );
+    background-size: 20px 20px; /* 控制波浪的密集程度 */
+    background-repeat: repeat-x;
   }
 
-  .footer-content {
+  /* === 页脚主体 === */
+  .site-footer {
+    /* 关键修复：颜色加深一级 (High)，与正文区分开 */
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    width: 100%;
+    padding-top: 24px;
+  }
+
+  /* 内容布局 (保持不变) */
+  .footer-content-wrapper {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 24px 48px 24px;
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-  }
-
-  /* 桌面端样式布局 */
-  @media (min-width: 768px) {
-    .footer-content {
-      flex-direction: row;
-      justify-content: space-between;
-      padding: 0 64px;
-    }
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 24px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  .footer-intro {
+    max-width: 360px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .brand-logo {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--md-sys-color-primary);
+  }
+  
+  .logo-icon { font-size: 28px; }
+  .logo-text { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; }
+
+  .tagline {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.9rem; line-height: 1.6; margin: 0;
+  }
+
+  .footer-links-grid {
+    display: flex; gap: 64px; flex-wrap: wrap;
+  }
+
+  .links-group { display: flex; flex-direction: column; gap: 12px; }
+
+  .group-title {
+    font-size: 0.85rem; font-weight: 600; text-transform: uppercase;
+    color: var(--md-sys-color-on-surface); opacity: 0.8; margin: 0 0 4px 0;
   }
 
   .footer-link {
-    text-decoration: none;
-    color: inherit;
-    font-size: 0.875rem; /* Body Small */
-    line-height: 20px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: color 0.2s;
+    text-decoration: none; color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.95rem; transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--md-sys-color-primary); text-decoration: underline; }
+
+  .footer-bottom-bar {
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding: 16px 24px 24px 24px;
+    font-size: 0.85rem;
+    color: var(--md-sys-color-on-surface-variant);
+    background-color: rgba(0,0,0,0.02);
   }
 
-  .footer-link:hover {
-    color: var(--md-sys-color-primary);
-    text-decoration: underline;
+  .bottom-bar-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
   }
   
-  .copyright {
-      font-size: 0.875rem; /* Body Small */
-      color: var(--md-sys-color-on-surface-variant);
-      text-align: center;
-  }
-  
-  /* 外部链接图标样式 */
-  .external-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+  .theme-credit a { color: inherit; font-weight: 500; text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .footer-content-wrapper { flex-direction: column; gap: 32px; }
+    .footer-links-grid { gap: 40px; width: 100%; justify-content: space-between; }
+    .bottom-bar-inner { flex-direction: column; align-items: flex-start; }
   }
 </style>
