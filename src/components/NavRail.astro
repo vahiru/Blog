@@ -1,4 +1,5 @@
 ---
+// src/components/NavRail.astro
 import ColorPicker from './ColorPicker.astro'; 
 const pathname = Astro.url.pathname;
 
@@ -31,10 +32,17 @@ const navItems = [
   <div class="spacer"></div>
 
   <div class="nav-group bottom-group">
+    
+    <a href="/rss.xml" target="_blank" class="nav-item rss-btn">
+       <div class="icon-container"><md-icon>rss_feed</md-icon><md-ripple></md-ripple></div>
+       <span class="label">RSS</span>
+    </a>
+
     <button id="palette-btn" class="nav-item" type="button">
       <div class="icon-container"><md-icon>palette</md-icon><md-ripple></md-ripple></div>
       <span class="label">Color</span>
     </button>
+    
     <button id="theme-toggle" class="nav-item" type="button">
       <div class="icon-container"><md-icon id="theme-icon">dark_mode</md-icon><md-ripple></md-ripple></div>
       <span class="label">Theme</span>
@@ -96,6 +104,13 @@ const navItems = [
         color: var(--md-sys-color-on-secondary-container);
     }
     .nav-item.active .label { font-weight: 700; color: var(--md-sys-color-on-surface); }
+    
+    /* RSS 按钮特别样式：悬浮时图标变色 (Tertiary) */
+    .rss-btn:hover .icon-container {
+        color: var(--md-sys-color-tertiary);
+        background-color: var(--md-sys-color-tertiary-container);
+    }
+    
     .label { font-size: 11px; font-weight: 500; text-align: center; }
   }
 
@@ -115,6 +130,9 @@ const navItems = [
       
       display: flex; flex-direction: column; align-items: flex-start;
       box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+      
+      /* 允许滚动，防止内容溢出 */
+      overflow-y: auto;
     }
     
     :global(body.drawer-open) .nav-rail { transform: translateX(0); }
@@ -123,6 +141,9 @@ const navItems = [
     .drawer-header { padding: 0 28px; margin-bottom: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); }
     
     .nav-group { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+    
+    /* 底部组加点上边距 */
+    .bottom-group { margin-top: 12px; border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 12px; }
 
     /* 【关键修复：胶囊布局】 */
     .nav-item {

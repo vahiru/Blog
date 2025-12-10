@@ -4,7 +4,7 @@ import lit from '@astrojs/lit';
 // https://astro.build/config
 
 export default defineConfig({
-  site: 'http://localhost:4321',
+  site: 'https://vahiru.is-cute.cat/',
   markdown: {
     shikiConfig: {
       // 启用双主题
