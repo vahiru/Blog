@@ -59,7 +59,12 @@ const onThemeColorVar = `var(--md-sys-color-on-${themes[post.data.title.length %
 const description = post.data.description || post.body.substring(0, 100);
 ---
 
-<Layout title={post.data.title} description={description} image={post.data.cover}>
+<Layout 
+  title={post.data.title} 
+  description={description} 
+  image={post.data.cover}
+  articleDate={post.data.date}
+>
   
   <div class="blog-layout">
     

@@ -1,10 +1,13 @@
 import { defineConfig } from 'astro/config';
 import lit from '@astrojs/lit';
 
+import sitemap from '@astrojs/sitemap';
+
 // https://astro.build/config
 
 export default defineConfig({
   site: 'https://vahiru.is-cute.cat/',
+
   markdown: {
     shikiConfig: {
       // 启用双主题
@@ -18,4 +21,6 @@ export default defineConfig({
       wrap: true,
     },
   },
+
+  integrations: [sitemap()],
 });
