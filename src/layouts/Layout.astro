@@ -10,28 +10,46 @@ interface Props {
     title?: string;
     description?: string;
     image?: string;
-    articleDate?: Date; // [新增] 文章发布时间
+    articleDate?: Date;
 }
 
 const { 
     title = "Vahiru's Blog",
     description = "猫猫的自留地",
-    image = "/images/default-og.jpg", // [修改] 默认改用 default-og.png，没有的话会自动降级
+    // ⚠️ [修改点 1] 默认图片改为 /images/ 目录下的文件
+    // 请确保你的 public/images/ 目录下真有这张图，后缀是 png/jpg/webp 都可以，这里改对就行
+    image: _image,
     articleDate
 } = Astro.props;
 
-// === [新增] SEO 逻辑计算 ===
-// 1. 生成规范 URL
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-// 2. 生成绝对路径图片 URL (社交平台只认绝对路径)
-const socialImageURL = new URL(image, Astro.site);
-// 3. 页面标题处理
+// 如果没传图片，就用默认的
+const image = _image || "/images/default-og.png";
+
+// 1. 获取站点域名
+const siteBase = Astro.site ? Astro.site.href : 'http://localhost:4321';
+
+// 2. 智能链接拼接函数
+const resolveImage = (imgSrc: string) => {
+    // 情况 A: 已经是网络链接 (https://...) -> 直接用
+    if (imgSrc.startsWith('http')) return imgSrc;
+    
+    // 情况 B: 已经是绝对路径 (/images/cover.jpg) -> 拼上域名
+    if (imgSrc.startsWith('/')) {
+        return new URL(imgSrc.slice(1), siteBase).href;
+    }
+    // 情况 C: 用户只写了文件名 (cover.jpg) -> 自动补全 /images/ 前缀
+    // 这是一个容错优化，假设你的图片都在 images 文件夹
+    return new URL(`images/${imgSrc}`, siteBase).href;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, siteBase);
+const socialImageURL = resolveImage(image); // 使用新函数处理
 const siteTitle = "Vahiru's Blog";
 const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
     <head>
         <BaseHead title={pageTitle} description={description} image={image} />
         
@@ -40,9 +58,10 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalURL} />
-        <meta property="og:image" content={socialImageURL} />
         <meta property="og:site_name" content={siteTitle} />
         <meta property="og:locale" content="zh_CN" />
+        <meta property="og:image" content={socialImageURL} />
+        
         {articleDate ? (
           <>
             <meta property="og:type" content="article" />
@@ -74,6 +93,7 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
             }
         </script>
     </head>
+    
     <body>
         <div id="scrim" class="scrim"></div>
 
@@ -89,7 +109,6 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
         
         <div class="app-layout">
             <NavRail />
-            
             <main class="main-content">
                 <div class="content-inner">
                     <slot />
@@ -101,24 +120,18 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
         <SearchWidget />
 
         <script>
-            // 导入 Material Web 组件 (避开 SSR 报错)
             import '@material/web/icon/icon.js';
             import '@material/web/button/elevated-button.js';
             import '@material/web/ripple/ripple.js';
 
-            // === 移动端菜单逻辑 ===
             const menuBtn = document.getElementById('menu-btn');
             const scrim = document.getElementById('scrim');
             const body = document.body;
 
             menuBtn?.addEventListener('click', () => body.classList.add('drawer-open'));
             scrim?.addEventListener('click', () => body.classList.remove('drawer-open'));
-            
-            // 路由跳转自动关闭菜单 (View Transitions 兼容)
             document.addEventListener('astro:after-swap', () => body.classList.remove('drawer-open'));
 
-            // === 搜索按钮逻辑 ===
-            // 绑定所有带 aria-label="Search" 的按钮
             const searchBtns = document.querySelectorAll('button[aria-label="Search"]');
             searchBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -131,104 +144,43 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
 </html>
 
 <style>
-    /* === 布局结构 === */
-    .app-layout {
-        display: contents; /* 让子元素直接参与 Body 的 Grid 布局 (Desktop) */
-    }
-
-    /* === 主内容区域 === */
+    .app-layout { display: contents; }
     .main-content {
         background-color: var(--md-sys-color-surface-container);
         transition: background-color 0.3s ease;
-        
-        /* Flex 布局让 Footer 沉底 */
-        display: flex;
-        flex-direction: column;
-        
-        /* 滚动与定位 */
-        position: relative;
+        display: flex; flex-direction: column; position: relative;
     }
-    
-    .content-inner {
-        flex: 1; /* 撑开高度 */
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    /* === 移动端遮罩层 === */
+    .content-inner { flex: 1; width: 100%; box-sizing: border-box; }
     .scrim {
         position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-        z-index: 1100; opacity: 0; pointer-events: none; 
-        transition: opacity 0.3s;
+        z-index: 1100; opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
     body.drawer-open .scrim { opacity: 1; pointer-events: auto; }
-
-    /* === 图标按钮通用样式 === */
     .icon-btn { 
-        width: 48px; height: 48px; 
-        display: flex; align-items: center; justify-content: center; 
-        color: var(--md-sys-color-on-surface);
-        border-radius: 50%;
+        width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; 
+        color: var(--md-sys-color-on-surface); border-radius: 50%; background: transparent; border: none; cursor: pointer;
     }
     .icon-btn:hover { background-color: rgba(0,0,0,0.05); }
 
-    /* =================================================================
-       Desktop Layout (>= 993px) - 使用 global.css 定义的 Grid
-       ================================================================= */
     @media (min-width: 993px) {
-        .mobile-top-bar { display: none; } /* 隐藏移动端 Header */
-        
+        .mobile-top-bar { display: none; }
         .main-content {
-            /* 桌面端圆角 */
-            border-top-left-radius: 28px;
-            border-bottom-left-radius: 28px;
-            
-            /* 位于 Grid 第二列 */
-            grid-column: 2 / 3; 
-            
-            /* 独立滚动 */
-            height: 100vh;
-            overflow-y: auto;
+            border-top-left-radius: 28px; border-bottom-left-radius: 28px;
+            grid-column: 2 / 3; height: 100vh; overflow-y: auto;
         }
-        
         .content-inner { padding: 2rem 3rem; }
     }
-
-    /* =================================================================
-       Mobile Layout (<= 992px) - 块级流式布局
-       ================================================================= */
     @media (max-width: 992px) {
-        /* 移动端 Header */
         .mobile-top-bar {
-            display: flex; position: fixed; top: 0; left: 0; right: 0;
-            height: 64px; z-index: 100; 
-            background: var(--md-sys-color-surface);
-            padding: 0 8px;
-            align-items: center; justify-content: space-between;
+            display: flex; position: fixed; top: 0; left: 0; right: 0; height: 64px; z-index: 100; 
+            background: var(--md-sys-color-surface); padding: 0 8px; align-items: center; justify-content: space-between;
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        
-        .header-title {
-            font-size: 1.25rem; font-weight: 500; color: var(--md-sys-color-on-surface);
-        }
-        
-        /* 内容区适配 */
+        .header-title { font-size: 1.25rem; font-weight: 500; color: var(--md-sys-color-on-surface); }
         .main-content {
-            grid-column: 1 / -1; /* 占满全宽 */
-            border-radius: 0; /* 移除圆角 */
-            
-            /* 顶部避让 Header */
-            padding-top: 64px; 
-            
-            /* 高度自动，跟随 body 滚动 */
-            height: auto; 
-            min-height: 100vh;
-            overflow-y: visible;
-            
-            /* 背景色统一 */
-            background-color: var(--md-sys-color-surface); 
+            grid-column: 1 / -1; border-radius: 0; padding-top: 64px; 
+            height: auto; min-height: 100vh; overflow-y: visible; background-color: var(--md-sys-color-surface); 
         }
-        
         .content-inner { padding: 1rem; }
     }
 </style>
