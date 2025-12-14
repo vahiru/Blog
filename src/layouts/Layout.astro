@@ -10,20 +10,20 @@ interface Props {
     title?: string;
     description?: string;
     image?: string;
-    articleDate?: Date; // 新增：文章发布时间，用于 SEO
+    articleDate?: Date; // [新增] 文章发布时间
 }
 
 const { 
     title = "Vahiru's Blog",
     description = "猫猫的自留地",
-    image = "/default-og.png", // 默认使用你刚才做的封面图
+    image = "/default-og.png", // [修改] 默认改用 default-og.png，没有的话会自动降级
     articleDate
 } = Astro.props;
 
-// === SEO 逻辑计算 ===
+// === [新增] SEO 逻辑计算 ===
 // 1. 生成规范 URL
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-// 2. 生成绝对路径图片 URL
+// 2. 生成绝对路径图片 URL (社交平台只认绝对路径)
 const socialImageURL = new URL(image, Astro.site);
 // 3. 页面标题处理
 const siteTitle = "Vahiru's Blog";
@@ -74,7 +74,6 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
             }
         </script>
     </head>
-    
     <body>
         <div id="scrim" class="scrim"></div>
 
@@ -170,9 +169,6 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} | ${siteTitle}`;
         display: flex; align-items: center; justify-content: center; 
         color: var(--md-sys-color-on-surface);
         border-radius: 50%;
-        background: transparent;
-        border: none;
-        cursor: pointer;
     }
     .icon-btn:hover { background-color: rgba(0,0,0,0.05); }
 
