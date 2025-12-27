@@ -4,8 +4,8 @@
 // ==================================================
 
 import { getCollection } from "astro:content";
-import Layout from "../layouts/Layout.astro";
-import PostCard from "../components/PostCard.astro";
+import Layout from "astro-mochi-tones:layouts/Layout.astro";
+import PostCard from "astro-mochi-tones:components/PostCard.astro";
 
 // 1. 获取文章
 const allPosts = await getCollection("blog");
