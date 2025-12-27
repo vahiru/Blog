@@ -10,5 +10,9 @@
                 "./package/src/*"
             ]
         }
-    }
+    },
+    "include": [
+        "src",
+        "package"
+    ]
 }

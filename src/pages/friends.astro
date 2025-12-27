@@ -1,13 +1,12 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "astro-mochi-tones:layouts/Layout.astro";
 // 确保路径正确，如果你还没创建 data 文件，可以直接把数据写在这里的 const friends = [...] 里
-import { friendsData } from '../data/friends'; 
-import '@material/web/icon/icon.js';
+import { friendsData } from "../data/friends";
+import "@material/web/icon/icon.js";
 ---
 
 <Layout title="友情链接">
   <div class="friends-container">
-    
     <header class="page-header">
       <h1 class="page-title">
         <span class="material-symbols-rounded title-icon">group</span>
@@ -17,27 +16,36 @@ import '@material/web/icon/icon.js';
     </header>
 
     <div class="friends-grid">
-      {friendsData.map(link => (
-        <a href={link.url} target="_blank" rel="noopener noreferrer" class="friend-card">
-          
-          <div class="avatar-box">
-            {link.avatar ? (
-              <img src={link.avatar} alt={link.name} />
-            ) : (
-              <span class="material-symbols-rounded fallback-icon">public</span>
-            )}
-          </div>
-
-          <div class="info-box">
-            <div class="name-row">
-                <h3 class="friend-name">{link.name}</h3>
-                <span class="material-symbols-rounded arrow-icon">open_in_new</span>
+      {
+        friendsData.map((link) => (
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="friend-card"
+          >
+            <div class="avatar-box">
+              {link.avatar ? (
+                <img src={link.avatar} alt={link.name} />
+              ) : (
+                <span class="material-symbols-rounded fallback-icon">
+                  public
+                </span>
+              )}
             </div>
-            <p class="friend-desc">{link.desc}</p>
-          </div>
-          
-        </a>
-      ))}
+
+            <div class="info-box">
+              <div class="name-row">
+                <h3 class="friend-name">{link.name}</h3>
+                <span class="material-symbols-rounded arrow-icon">
+                  open_in_new
+                </span>
+              </div>
+              <p class="friend-desc">{link.desc}</p>
+            </div>
+          </a>
+        ))
+      }
     </div>
   </div>
 </Layout>
@@ -48,16 +56,31 @@ import '@material/web/icon/icon.js';
     margin: 0 auto;
     padding: 2rem 1rem;
   }
-  
+
   /* === Header === */
-  .page-header { text-align: center; margin-bottom: 3rem; }
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
   .page-title {
-    display: flex; align-items: center; justify-content: center; gap: 12px;
-    font-size: 2.2rem; font-weight: 600; color: var(--md-sys-color-on-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
     margin: 0 0 0.5rem 0;
   }
-  .title-icon { font-size: 40px; color: var(--md-sys-color-primary); }
-  .page-desc { font-size: 1rem; color: var(--md-sys-color-on-surface-variant); opacity: 0.8; }
+  .title-icon {
+    font-size: 40px;
+    color: var(--md-sys-color-primary);
+  }
+  .page-desc {
+    font-size: 1rem;
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.8;
+  }
 
   /* === Grid === */
   .friends-grid {
@@ -73,13 +96,13 @@ import '@material/web/icon/icon.js';
     flex-direction: row; /* 强制横向排列 */
     align-items: center;
     gap: 16px;
-    
+
     background-color: var(--md-sys-color-surface);
     padding: 16px;
     border-radius: 16px;
     text-decoration: none;
     color: inherit;
-    
+
     border: 1px solid var(--md-sys-color-outline-variant); /* 加个细边框更精致 */
     transition: all 0.2s ease;
     position: relative;
@@ -90,7 +113,7 @@ import '@material/web/icon/icon.js';
     transform: translateY(-2px);
     background-color: var(--md-sys-color-surface-container);
     border-color: var(--md-sys-color-primary);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
 
   /* === Avatar (关键修复) === */
@@ -99,10 +122,12 @@ import '@material/web/icon/icon.js';
     width: 64px !important;
     height: 64px !important;
     flex: 0 0 64px; /* 禁止 Flex 伸缩 */
-    
+
     border-radius: 50%;
     background-color: var(--md-sys-color-surface-variant);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden; /* 裁剪溢出的图片 */
     border: 1px solid var(--md-sys-color-outline-variant);
   }
@@ -115,7 +140,11 @@ import '@material/web/icon/icon.js';
     display: block;
   }
 
-  .fallback-icon { font-size: 32px; color: var(--md-sys-color-on-surface-variant); opacity: 0.5; }
+  .fallback-icon {
+    font-size: 32px;
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.5;
+  }
 
   /* === Info === */
   .info-box {
@@ -127,7 +156,9 @@ import '@material/web/icon/icon.js';
   }
 
   .name-row {
-      display: flex; align-items: center; justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .friend-name {
@@ -135,7 +166,9 @@ import '@material/web/icon/icon.js';
     font-size: 1rem;
     font-weight: 600;
     color: var(--md-sys-color-on-surface);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .friend-desc {
@@ -148,6 +181,9 @@ import '@material/web/icon/icon.js';
     overflow: hidden;
     line-height: 1.4;
   }
-  
-  .arrow-icon { font-size: 18px; color: var(--md-sys-color-outline); }
+
+  .arrow-icon {
+    font-size: 18px;
+    color: var(--md-sys-color-outline);
+  }
 </style>
