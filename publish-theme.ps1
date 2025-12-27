@@ -11,10 +11,18 @@ if ($status) {
     exit 1
 }
 
-# Push package/ directory to theme-remote (Astro-Mochi-Tones repo)
-Write-Host "Pushing package/ to theme-remote (Astro-Mochi-Tones)..." -ForegroundColor Yellow
+# First time setup: use split + force push to overwrite remote
+Write-Host "Splitting package/ into a separate branch..." -ForegroundColor Yellow
 
-git subtree push --prefix=package theme-remote main
+# Create a temporary branch from the subtree
+git subtree split --prefix=package -b temp-theme-branch
+
+# Force push to theme-remote
+Write-Host "Force pushing to theme-remote (Astro-Mochi-Tones)..." -ForegroundColor Yellow
+git push theme-remote temp-theme-branch:main --force
+
+# Clean up temp branch
+git branch -D temp-theme-branch
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Theme published successfully!" -ForegroundColor Green
