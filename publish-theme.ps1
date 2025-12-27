@@ -11,10 +11,10 @@ if ($status) {
     exit 1
 }
 
-# Push package/ directory to origin (Astro-Mochi-Tones repo)
-Write-Host "Pushing package/ to origin..." -ForegroundColor Yellow
+# Push package/ directory to theme-remote (Astro-Mochi-Tones repo)
+Write-Host "Pushing package/ to theme-remote (Astro-Mochi-Tones)..." -ForegroundColor Yellow
 
-git subtree push --prefix=package origin main
+git subtree push --prefix=package theme-remote main
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Theme published successfully!" -ForegroundColor Green

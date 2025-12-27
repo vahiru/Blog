@@ -1,14 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "blog",
-  "main": "./dist/_worker.js/index.js",
-  // 更新为今天的日期
   "compatibility_date": "2025-11-25",
-  "compatibility_flags": ["nodejs_compat"],
-  "assets": {
-    "binding": "ASSETS",
-    "directory": "./dist"
-  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "pages_build_output_dir": "playground/dist",
   "observability": {
     "enabled": true
   }
