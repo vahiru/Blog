@@ -3,9 +3,9 @@
 import { getCollection } from "astro:content";
 import type { GetStaticPaths, Page } from "astro";
 import type { CollectionEntry } from "astro:content";
-import Layout from "../../../layouts/Layout.astro";
-import PostCard from "../../../components/PostCard.astro";
-import Pagination from "../../../components/Pagination.astro";
+import Layout from "astro-mochi-tones:layouts/Layout.astro";
+import PostCard from "astro-mochi-tones:components/PostCard.astro";
+import Pagination from "astro-mochi-tones:components/Pagination.astro";
 import "@material/web/icon/icon.js";
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
