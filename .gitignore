@@ -1,17 +1,49 @@
-/.astro
-/node_modules
+# Dependencies
+node_modules/
 package-lock.json
-/dist
-/.vscode
-/.DS_Store
-/.env
-/.env.local
-/.env.*.local
-/coverage
-/.turbo
-/build
-/tsconfig.tsbuildinfo
-/.pnp
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.astro/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Turbo
+.turbo/
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Yarn
+.pnp
 .pnp.js
 .yarn/cache
 .yarn/unplugged
+
+# Coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Playground 私有内容 (不推送到主题仓库)
+# 取消注释以下行以忽略私有内容
+# playground/src/content/blog/
+# playground/public/images/
