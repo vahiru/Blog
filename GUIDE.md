@@ -171,26 +171,29 @@ draft: false
 
 当你对主题代码（`themes/astro-mochi-tones/` 目录）做了修改，想要发布到 GitHub 让别人也能用：
 
-### 第 1 步：在主题子模块里提交更改
+### 第 1 步：在主题子模块里提交并推送
 
 ```bash
 cd themes/astro-mochi-tones
+git switch main
 git add .
 git commit -m "更新主题"
+git push origin main
 cd ../..
 ```
 
-### 第 2 步：运行发布脚本
+### 第 2 步：在博客仓库提交子模块指针
+
+```bash
+git add themes/astro-mochi-tones
+git commit -m "更新主题子模块"
+git push origin main
+```
+
+如果只是想查看当前主题和博客仓库状态，可以运行辅助脚本：
 
 ```bash
 .\publish-theme.ps1
-```
-
-这会把主题子模块的提交推送到 Astro-Mochi-Tones 仓库。推送完成后，再在博客仓库提交更新后的子模块指针：
-
-```bash
-git add themes/astro-mochi-tones .gitmodules package.json tsconfig.json publish-theme.ps1 GUIDE.md
-git commit -m "更新主题子模块"
 ```
 
 ---

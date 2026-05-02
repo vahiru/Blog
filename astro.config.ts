@@ -10,8 +10,17 @@ export default defineConfig({
             config: {
                 title: "Vahiru Blog",
                 description: "A personal blog powered by Astro Mochi Tones",
+                author: "Vahiru",
+                waline: {
+                    serverURL: "https://waline-fawn-nine.vercel.app",
+                },
             },
-            pages: {},
+            pages: {
+                "/archives/[...page]": false,
+                "/blog/[...slug]": false,
+                "/categories/[category]/[...page]": false,
+                "/tags/[tag]/[...page]": false,
+            },
             overrides: {},
         }),
     ],
