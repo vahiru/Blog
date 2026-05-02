@@ -18,7 +18,7 @@
         "@material/web": "^2.4.1",
         "@waline/client": "^3.8.0",
         "astro": "^5.16.0",
-        "astro-mochi-tones": "file:./package",
+        "astro-mochi-tones": "file:./themes/astro-mochi-tones",
         "fuse.js": "^7.1.0",
         "markdown-it": "^14.1.0",
         "sanitize-html": "^2.17.0",

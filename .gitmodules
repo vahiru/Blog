@@ -1,0 +1,4 @@
+[submodule "themes/astro-mochi-tones"]
+	path = themes/astro-mochi-tones
+	url = https://github.com/vahiru/Astro-Mochi-Tones.git
+	branch = main

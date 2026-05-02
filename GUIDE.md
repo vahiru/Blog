@@ -22,12 +22,12 @@
 
 | 部分 | 说明 | 你需要做什么 |
 |------|------|-------------|
-| `package/` | 主题代码，可以发布给其他人使用 | 开发和维护主题 |
-| `playground/` | 你的个人博客，使用上面的主题 | 写文章、添加图片 |
+| `themes/astro-mochi-tones/` | 主题代码，作为 Git 子模块引用 | 开发和维护主题 |
+| 根目录 | 你的个人博客，使用上面的主题 | 写文章、添加图片 |
 
 **简单理解**：
-- `package/` = 博客的"皮肤"（颜色、布局、按钮样式等）
-- `playground/` = 博客的"内容"（你的文章、图片）
+- `themes/astro-mochi-tones/` = 博客的"皮肤"（颜色、布局、按钮样式等）
+- 根目录 = 博客的"内容"（你的文章、图片）
 
 ---
 
@@ -39,11 +39,8 @@
    - 下载：https://nodejs.org/ （选择 LTS 版本）
    - 安装后打开终端，输入 `node -v` 确认安装成功
 
-2. **pnpm** — 包管理器（比 npm 更快）
-   - 打开终端，运行：
-   ```bash
-   npm install -g pnpm
-   ```
+2. **npm** — Node.js 自带的包管理器
+   - 安装 Node.js 后会自动带上 npm
 
 3. **Git** — 版本控制
    - 下载：https://git-scm.com/
@@ -54,7 +51,8 @@
 
 ```bash
 cd C:\Users\nekov\Project\Blog
-pnpm install
+git submodule update --init --recursive
+npm install
 ```
 
 这会安装所有需要的软件包，可能需要几分钟。
@@ -66,25 +64,19 @@ pnpm install
 ```
 Blog/
 │
-├── 📁 package/              # 【主题代码】
-│   ├── 📁 src/
-│   │   ├── 📁 components/   # 组件（按钮、卡片、导航栏等）
-│   │   ├── 📁 layouts/      # 布局（页面整体框架）
-│   │   ├── 📁 pages/        # 页面模板（首页、文章页等）
-│   │   └── 📁 styles/       # 样式（颜色、字体、间距）
-│   ├── 📄 index.ts          # 主题入口文件
-│   ├── 📄 package.json      # 主题配置
-│   └── 📄 README.md         # 主题说明文档
+├── 📁 themes/
+│   └── 📁 astro-mochi-tones/ # 【主题子模块】
+│       ├── 📁 src/
+│       ├── 📄 index.ts       # 主题入口文件
+│       └── 📄 package.json   # 主题配置
 │
-├── 📁 playground/           # 【你的博客】
-│   ├── 📁 src/
-│   │   ├── 📁 content/blog/ # ⭐ 你的文章放这里！
-│   │   └── 📁 data/         # 数据文件（友链等）
-│   ├── 📁 public/           # ⭐ 你的图片放这里！
-│   └── 📄 astro.config.ts   # 博客配置
-│
+├── 📁 src/
+│   ├── 📁 content/blog/     # ⭐ 你的文章放这里！
+│   └── 📁 data/             # 数据文件（友链等）
+├── 📁 public/               # ⭐ 你的图片放这里！
+├── 📄 astro.config.ts       # 博客配置
+├── 📄 .gitmodules           # 子模块配置
 ├── 📄 .gitignore            # Git 忽略文件
-├── 📄 pnpm-workspace.yaml   # 工作区配置
 └── 📄 publish-theme.ps1     # 发布主题的脚本
 ```
 
@@ -92,8 +84,9 @@ Blog/
 
 | 目录 | 用途 |
 |------|------|
-| `playground/src/content/blog/` | 放你的文章（.md 或 .mdx 文件） |
-| `playground/public/` | 放你的图片、视频等资源 |
+| `src/content/blog/` | 放你的文章（.md 或 .mdx 文件） |
+| `public/` | 放你的图片、视频等资源 |
+| `themes/astro-mochi-tones/` | 修改主题代码 |
 
 ---
 
@@ -104,7 +97,7 @@ Blog/
 每次开始写博客前，运行这个命令：
 
 ```bash
-pnpm playground:dev
+npm run dev
 ```
 
 然后打开浏览器访问 **http://localhost:4321/**
@@ -121,10 +114,10 @@ pnpm playground:dev
 
 ### 第 1 步：创建文件
 
-在 `playground/src/content/blog/` 目录下创建一个 `.md` 文件，例如：
+在 `src/content/blog/` 目录下创建一个 `.md` 文件，例如：
 
 ```
-playground/src/content/blog/my-first-post.md
+src/content/blog/my-first-post.md
 ```
 
 ### 第 2 步：填写文章信息（Frontmatter）
@@ -165,7 +158,7 @@ draft: false
 
 ### 第 3 步：添加图片
 
-1. 把图片放到 `playground/public/images/` 目录
+1. 把图片放到 `public/images/` 目录
 2. 在文章中这样引用：
 
 ```markdown
@@ -176,13 +169,15 @@ draft: false
 
 ## 发布主题
 
-当你对主题代码（`package/` 目录）做了修改，想要发布到 GitHub 让别人也能用：
+当你对主题代码（`themes/astro-mochi-tones/` 目录）做了修改，想要发布到 GitHub 让别人也能用：
 
-### 第 1 步：提交更改
+### 第 1 步：在主题子模块里提交更改
 
 ```bash
+cd themes/astro-mochi-tones
 git add .
 git commit -m "更新主题"
+cd ../..
 ```
 
 ### 第 2 步：运行发布脚本
@@ -191,7 +186,33 @@ git commit -m "更新主题"
 .\publish-theme.ps1
 ```
 
-这会把 `package/` 目录的内容推送到 Astro-Mochi-Tones 仓库。
+这会把主题子模块的提交推送到 Astro-Mochi-Tones 仓库。推送完成后，再在博客仓库提交更新后的子模块指针：
+
+```bash
+git add themes/astro-mochi-tones .gitmodules package.json tsconfig.json publish-theme.ps1 GUIDE.md
+git commit -m "更新主题子模块"
+```
+
+---
+
+## Cloudflare Pages 部署
+
+在 Cloudflare Pages 里使用这些构建设置：
+
+| 配置项 | 值 |
+|------|------|
+| Framework preset | Astro |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Node.js version | `22.16.0` |
+
+这个仓库使用 Git 子模块引用主题。正常情况下，Cloudflare 从 GitHub 构建时会按 `.gitmodules` 拉取公开子模块；如果构建日志里出现 `themes/astro-mochi-tones` 不存在或 `file:./themes/astro-mochi-tones` 无法解析，先确认 GitHub 上提交了 `.gitmodules` 和子模块指针，然后重新部署。
+
+如果需要手动控制安装流程，可以在 Cloudflare Pages 环境变量里设置 `SKIP_DEPENDENCY_INSTALL=1`，并把构建命令改为：
+
+```bash
+git submodule update --init --recursive && npm install && npm run build
+```
 
 ---
 
@@ -200,26 +221,23 @@ git commit -m "更新主题"
 ### Q: 我只想写文章，不想改主题代码怎么办？
 
 只需要：
-1. 运行 `pnpm playground:dev`
-2. 在 `playground/src/content/blog/` 写文章
+1. 运行 `npm run dev`
+2. 在 `src/content/blog/` 写文章
 3. 完成！
 
-### Q: 终端报错 "command not found: pnpm"
+### Q: 终端报错 "npm: command not found"
 
-运行这个命令安装 pnpm：
-```bash
-npm install -g pnpm
-```
+重新安装 Node.js LTS 版本，并确认安装后运行 `npm -v` 有版本号。
 
 ### Q: 页面打开是空白的
 
 检查终端是否有报错信息，通常是：
-- 少了某个依赖 → 运行 `pnpm install`
+- 少了某个依赖 → 运行 `npm install`
 - 文章格式错误 → 检查 frontmatter 是否正确
 
 ### Q: 如何修改网站标题？
 
-编辑 `playground/astro.config.ts`：
+编辑 `astro.config.ts`：
 
 ```ts
 MochiTones({
@@ -234,9 +252,9 @@ MochiTones({
 
 1. 运行构建命令：
    ```bash
-   pnpm --filter playground build
+   npm run build
    ```
-2. 把 `playground/dist/` 目录上传到服务器或静态托管平台（如 Cloudflare Pages、Vercel）
+2. 把 `dist/` 目录上传到服务器或静态托管平台（如 Cloudflare Pages、Vercel）
 
 ---
 

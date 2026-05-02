@@ -43,7 +43,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Playground 私有内容 (不推送到主题仓库)
+# Blog 私有内容 (不推送到公开仓库时可启用)
 # 取消注释以下行以忽略私有内容
-# playground/src/content/blog/
-# playground/public/images/
+# src/content/blog/
+# public/images/

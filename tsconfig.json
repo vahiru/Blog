@@ -4,15 +4,15 @@
         "baseUrl": ".",
         "paths": {
             "astro-mochi-tones": [
-                "./package"
+                "./themes/astro-mochi-tones"
             ],
             "astro-mochi-tones:*": [
-                "./package/src/*"
+                "./themes/astro-mochi-tones/src/*"
             ]
         }
     },
     "include": [
         "src",
-        "package"
+        "themes/astro-mochi-tones"
     ]
 }

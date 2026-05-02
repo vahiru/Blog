@@ -1,32 +1,42 @@
-# Publish theme to Astro-Mochi-Tones repository
-# Uses git subtree to push package/ directory to theme repo
+# Publish theme submodule to Astro-Mochi-Tones repository
 
-Write-Host "Publishing Astro-Mochi-Tones theme..." -ForegroundColor Cyan
+$ErrorActionPreference = "Stop"
 
-# Check for uncommitted changes
-$status = git status --porcelain
-if ($status) {
-    Write-Host "Error: Please commit all changes first" -ForegroundColor Red
-    Write-Host "Run: git add . && git commit -m 'your message'" -ForegroundColor Yellow
+$ThemePath = "themes/astro-mochi-tones"
+$ThemeBranch = "main"
+
+Write-Host "Publishing Astro-Mochi-Tones theme submodule..." -ForegroundColor Cyan
+
+if (-not (Test-Path $ThemePath)) {
+    Write-Host "Error: Theme submodule directory not found: $ThemePath" -ForegroundColor Red
+    Write-Host "Run: git submodule update --init --recursive" -ForegroundColor Yellow
     exit 1
 }
 
-# First time setup: use split + force push to overwrite remote
-Write-Host "Splitting package/ into a separate branch..." -ForegroundColor Yellow
-
-# Create a temporary branch from the subtree
-git subtree split --prefix=package -b temp-theme-branch
-
-# Force push to theme-remote
-Write-Host "Force pushing to theme-remote (Astro-Mochi-Tones)..." -ForegroundColor Yellow
-git push theme-remote temp-theme-branch:main --force
-
-# Clean up temp branch
-git branch -D temp-theme-branch
-
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "Theme published successfully!" -ForegroundColor Green
+$rootStatus = git status --porcelain -- . ":(exclude)$ThemePath"
+if ($rootStatus) {
+    Write-Host "Error: Please commit or stash blog repository changes first." -ForegroundColor Red
+    Write-Host "Theme changes inside $ThemePath can remain uncommitted until the next step." -ForegroundColor Yellow
+    exit 1
 }
-else {
-    Write-Host "Publish failed. Check error messages above." -ForegroundColor Red
+
+Push-Location $ThemePath
+try {
+    $themeStatus = git status --porcelain
+    if ($themeStatus) {
+        Write-Host "Committing theme changes..." -ForegroundColor Yellow
+        git add .
+        git commit -m "Update theme"
+    }
+
+    Write-Host "Pushing theme repository to $ThemeBranch..." -ForegroundColor Yellow
+    git push origin $ThemeBranch
 }
+finally {
+    Pop-Location
+}
+
+Write-Host "Theme pushed successfully." -ForegroundColor Green
+Write-Host "Now commit the updated submodule pointer in the blog repository:" -ForegroundColor Cyan
+Write-Host "  git add themes/astro-mochi-tones .gitmodules package.json tsconfig.json publish-theme.ps1 GUIDE.md" -ForegroundColor Yellow
+Write-Host "  git commit -m `"Update theme submodule`"" -ForegroundColor Yellow
