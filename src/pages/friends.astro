@@ -1,189 +1,298 @@
 ---
 import Layout from "astro-mochi-tones:layouts/Layout.astro";
-// 确保路径正确，如果你还没创建 data 文件，可以直接把数据写在这里的 const friends = [...] 里
 import { friendsData } from "../data/friends";
 import "@material/web/icon/icon.js";
 ---
 
 <Layout title="友情链接">
-  <div class="friends-container">
-    <header class="page-header">
-      <h1 class="page-title">
-        <span class="material-symbols-rounded title-icon">group</span>
-        友情链接
-      </h1>
-      <p class="page-desc">欢迎交换友链，请在 GitHub 提交 Issue。</p>
-    </header>
+  <div class="md3-layout-grid">
+    <div class="content-wrapper">
+      <!-- 页面头部 -->
+      <header class="page-header">
+        <h1 class="display-large">友情链接</h1>
+        <p class="body-large secondary-text">
+          很高兴认识你。欢迎交换友链，请在 GitHub 提交 Issue 或联系我。
+        </p>
+      </header>
 
-    <div class="friends-grid">
-      {
-        friendsData.map((link) => (
-          <a
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="friend-card"
-          >
-            <div class="avatar-box">
-              {link.avatar ? (
-                <img src={link.avatar} alt={link.name} />
-              ) : (
-                <span class="material-symbols-rounded fallback-icon">
-                  public
-                </span>
-              )}
-            </div>
+      <div class="friends-main-layout">
+        <main class="friends-content">
+          <h2 class="title-large section-label">我的朋友们</h2>
+          <div class="friends-grid">
+            {
+              friendsData.map((link) => (
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="friend-card"
+                >
+                  <div class="avatar-box">
+                    {link.avatar ? (
+                      <img src={link.avatar} alt={link.name} loading="lazy" />
+                    ) : (
+                      <md-icon class="fallback-icon">public</md-icon>
+                    )}
+                  </div>
 
-            <div class="info-box">
-              <div class="name-row">
-                <h3 class="friend-name">{link.name}</h3>
-                <span class="material-symbols-rounded arrow-icon">
-                  open_in_new
-                </span>
-              </div>
-              <p class="friend-desc">{link.desc}</p>
+                  <div class="info-box">
+                    <div class="name-row">
+                      <h3 class="friend-name title-medium">{link.name}</h3>
+                      <md-icon class="arrow-icon">open_in_new</md-icon>
+                    </div>
+                    <p class="friend-desc body-small">{link.desc}</p>
+                  </div>
+                  <md-ripple></md-ripple>
+                </a>
+              ))
+            }
+          </div>
+        </main>
+
+        <aside class="sidebar">
+          <section class="sidebar-section">
+            <h3 class="label-large">申请说明</h3>
+            <p class="body-medium sidebar-text">
+              如果你也想加入这个列表，请确保你的网站：
+            </p>
+            <ul class="body-small sidebar-list">
+              <li>内容健康、积极向上</li>
+              <li>已添加本站链接</li>
+              <li>非纯采集或广告站点</li>
+            </ul>
+            <div class="sidebar-actions">
+              <md-filled-tonal-button href="https://github.com/vahiru/blog/issues" target="_blank">
+                提交申请
+                <md-icon slot="icon">add</md-icon>
+              </md-filled-tonal-button>
             </div>
-          </a>
-        ))
-      }
+          </section>
+        </aside>
+      </div>
     </div>
   </div>
 </Layout>
 
+<script>
+  import "@material/web/ripple/ripple.js";
+  import "@material/web/button/filled-tonal-button.js";
+</script>
+
 <style>
-  .friends-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
-
-  /* === Header === */
-  .page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-  .page-title {
+  /* === 布局网格 === */
+  .md3-layout-grid {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-size: 2.2rem;
-    font-weight: 600;
-    color: var(--md-sys-color-on-surface);
-    margin: 0 0 0.5rem 0;
-  }
-  .title-icon {
-    font-size: 40px;
-    color: var(--md-sys-color-primary);
-  }
-  .page-desc {
-    font-size: 1rem;
-    color: var(--md-sys-color-on-surface-variant);
-    opacity: 0.8;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
   }
 
-  /* === Grid === */
+  .content-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .page-header {
+    padding: 4rem 1rem 3rem 1rem;
+    max-width: 800px;
+  }
+
+  .page-header h1 {
+    margin-bottom: 1rem;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .secondary-text {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .friends-main-layout {
+    display: grid;
+    gap: 24px;
+    padding: 0 1rem;
+  }
+
+  /* 桌面端布局 */
+  @media (min-width: 840px) {
+    .friends-main-layout {
+      grid-template-columns: repeat(12, 1fr);
+      padding-top: 1rem;
+    }
+    .friends-content {
+      grid-column: span 8;
+    }
+    .sidebar {
+      grid-column: span 4;
+      position: sticky;
+      top: 2rem;
+      height: fit-content;
+    }
+  }
+
+  /* 平板端布局 */
+  @media (min-width: 600px) and (max-width: 839px) {
+    .friends-main-layout {
+      grid-template-columns: repeat(8, 1fr);
+    }
+    .friends-content, .sidebar {
+      grid-column: span 8;
+    }
+    .sidebar {
+      margin-top: 2rem;
+    }
+  }
+
+  /* 移动端布局 */
+  @media (max-width: 599px) {
+    .friends-main-layout {
+      display: block;
+      padding: 0;
+    }
+    .page-header {
+      padding: 2rem 0;
+    }
+    .page-header h1 {
+      font-size: 2.5rem;
+    }
+    .sidebar-section {
+      background: transparent !important;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 0 !important;
+      padding: 1rem 0 !important;
+    }
+  }
+
+  .section-label {
+    margin-bottom: 1.5rem;
+    color: var(--md-sys-color-on-surface);
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* === 友情链接网格 === */
   .friends-grid {
     display: grid;
-    /* 自动填充，最小宽度 300px */
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
   }
 
-  /* === Card === */
+  /* === 友链卡片 (MD3 Elevated Card Style) === */
   .friend-card {
     display: flex;
-    flex-direction: row; /* 强制横向排列 */
     align-items: center;
     gap: 16px;
-
-    background-color: var(--md-sys-color-surface);
     padding: 16px;
-    border-radius: 16px;
+    background-color: var(--md-sys-color-surface-container-low);
+    border-radius: 20px;
     text-decoration: none;
     color: inherit;
-
-    border: 1px solid var(--md-sys-color-outline-variant); /* 加个细边框更精致 */
-    transition: all 0.2s ease;
     position: relative;
-    overflow: hidden; /* 防止内容溢出 */
+    overflow: hidden;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s;
+    box-shadow: var(--md-sys-elevation-level1);
   }
 
   .friend-card:hover {
-    transform: translateY(-2px);
-    background-color: var(--md-sys-color-surface-container);
-    border-color: var(--md-sys-color-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-4px);
+    background-color: var(--md-sys-color-surface-container-high);
+    box-shadow: var(--md-sys-elevation-level2);
   }
 
-  /* === Avatar (关键修复) === */
   .avatar-box {
-    /* 锁死尺寸 */
-    width: 64px !important;
-    height: 64px !important;
-    flex: 0 0 64px; /* 禁止 Flex 伸缩 */
-
-    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 16px; /* Squircle style */
     background-color: var(--md-sys-color-surface-variant);
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* 裁剪溢出的图片 */
     border: 1px solid var(--md-sys-color-outline-variant);
   }
 
-  /* 强制图片填充 */
   .avatar-box img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 裁剪模式 */
-    display: block;
+    object-fit: cover;
   }
 
   .fallback-icon {
-    font-size: 32px;
     color: var(--md-sys-color-on-surface-variant);
     opacity: 0.5;
   }
 
-  /* === Info === */
   .info-box {
     flex: 1;
-    min-width: 0; /* 防止 flex 子项被长文本撑开 */
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    min-width: 0;
   }
 
   .name-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 2px;
   }
 
   .friend-name {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
     color: var(--md-sys-color-on-surface);
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .friend-desc {
     margin: 0;
-    font-size: 0.85rem;
     color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.8;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* 最多显示2行 */
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.4;
   }
 
   .arrow-icon {
     font-size: 18px;
-    color: var(--md-sys-color-outline);
+    color: var(--md-sys-color-primary);
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    transform: translateX(-4px);
+  }
+
+  .friend-card:hover .arrow-icon {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* === 侧边栏小部件 === */
+  .sidebar-section {
+    background-color: var(--md-sys-color-surface-container);
+    padding: 1.5rem;
+    border-radius: 24px;
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+
+  .sidebar-section h3 {
+    margin-bottom: 1rem;
+    color: var(--md-sys-color-primary);
+    font-weight: 600;
+  }
+
+  .sidebar-text {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 1rem;
+  }
+
+  .sidebar-list {
+    margin: 0 0 1.5rem 0;
+    padding-left: 1.25rem;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .sidebar-list li {
+    margin-bottom: 4px;
   }
 </style>
