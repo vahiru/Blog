@@ -5,6 +5,15 @@ import MochiTones from "astro-mochi-tones";
 export default defineConfig({
     // 用于生成 canonical、RSS、Open Graph 等绝对链接。
     site: "https://vahiru.is-cute.cat/",
+    markdown: {
+        shikiConfig: {
+            themes: {
+                light: "github-light",
+                dark: "github-dark",
+            },
+            defaultColor: false,
+        },
+    },
     integrations: [
         mdx(),
         MochiTones({
