@@ -39,6 +39,18 @@ export async function getStaticPaths() {
 const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await post.render();
 
+const fallbackTitle = (entry: CollectionEntry<"blog"> | null) =>
+    entry?.data.title ||
+    entry?.slug
+        ?.split("/")
+        .pop()
+        ?.replace(/-/g, " ") ||
+    "Untitled";
+
+const postTitle = fallbackTitle(post);
+const postCover = post.data.cover;
+const postTags = Array.isArray(post.data.tags) ? post.data.tags : [];
+
 // 日期格式化
 let dateObj;
 try {
@@ -59,17 +71,18 @@ const formattedDate = isNaN(dateObj.getTime())
 
 // 生成无图时的 Banner 背景色
 const themes = ["primary", "secondary", "tertiary"];
-const themeColorVar = `var(--md-sys-color-${themes[post.data.title.length % themes.length]}-container)`;
-const onThemeColorVar = `var(--md-sys-color-on-${themes[post.data.title.length % themes.length]}-container)`;
+const themeIndex = postTitle.length % themes.length;
+const themeColorVar = `var(--md-sys-color-${themes[themeIndex]}-container)`;
+const onThemeColorVar = `var(--md-sys-color-on-${themes[themeIndex]}-container)`;
 
 // SEO 描述
-const description = post.data.description || post.body.substring(0, 100);
+const description = post.data.description || post.body?.substring(0, 100) || postTitle;
 ---
 
 <Layout
-    title={post.data.title}
+    title={postTitle}
     description={description}
-    image={post.data.cover}
+    image={postCover}
     articleDate={post.data.date}
 >
     <div class="blog-layout">
@@ -83,11 +96,11 @@ const description = post.data.description || post.body.substring(0, 100);
                     </div>
 
                     {
-                        post.data.cover ? (
+                        postCover ? (
                             <div class="cover-wrapper">
                                 <img
-                                    src={post.data.cover}
-                                    alt={post.data.title}
+                                    src={postCover}
+                                    alt={postTitle}
                                     class="post-cover"
                                     onerror="this.style.display='none'"
                                 />
@@ -103,7 +116,7 @@ const description = post.data.description || post.body.substring(0, 100);
                     }
 
                     <div class="header-text">
-                        <h1 class="post-title">{post.data.title}</h1>
+                        <h1 class="post-title">{postTitle}</h1>
                         <div class="post-meta">
                             <div class="meta-item">
                                 <md-icon style="font-size: 18px;"
@@ -125,13 +138,13 @@ const description = post.data.description || post.body.substring(0, 100);
 
                 <footer class="post-footer">
                     {
-                        post.data.tags && post.data.tags.length > 0 && (
+                        postTags.length > 0 && (
                             <div class="tags-wrapper">
                                 <md-icon style="font-size: 20px; opacity: 0.7;">
                                     label
                                 </md-icon>
                                 <div class="tags-list">
-                                    {post.data.tags.map((tag) => (
+                                    {postTags.map((tag) => (
                                         <a
                                             href={`/tags/${tag}`}
                                             class="tag-chip"
@@ -158,7 +171,7 @@ const description = post.data.description || post.body.substring(0, 100);
                             <div class="nav-label">
                                 <md-icon>arrow_back</md-icon> Previous
                             </div>
-                            <div class="nav-title">{prevPost.data.title}</div>
+                            <div class="nav-title">{fallbackTitle(prevPost)}</div>
                         </a>
                     ) : (
                         <div />
@@ -174,7 +187,7 @@ const description = post.data.description || post.body.substring(0, 100);
                             <div class="nav-label">
                                 Next <md-icon>arrow_forward</md-icon>
                             </div>
-                            <div class="nav-title">{nextPost.data.title}</div>
+                            <div class="nav-title">{fallbackTitle(nextPost)}</div>
                         </a>
                     )
                 }
