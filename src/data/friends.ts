@@ -12,7 +12,7 @@ export const friendsData: Friend[] = [
     { 
     name: "Restent Ou", 
     desc: "Secret with Silent", 
-    avatar: "https://library.gxres.net/images/icons/gxres042.webp",
+    avatar: "https://library.gxres.net/images/avatars/gxres042.webp",
     url: "https://www.gxres.net"
     },
     { 

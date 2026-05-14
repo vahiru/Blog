@@ -19,10 +19,14 @@ const posts = allPosts
     return dateB - dateA;
   });
 
-// 3. 提取分类
+// 3. 逻辑分拆：最新一篇作为 Featured
+const featuredPost = posts[0];
+const regularPosts = posts.slice(1, 9);
+
+// 4. 提取分类
 const categories = [...new Set(posts.flatMap(post => post.data.categories || []))].slice(0, 12);
 
-// 4. 计算全站统计
+// 5. 计算全站统计
 const stats = {
   posts: posts.length,
   categories: new Set(posts.flatMap(post => post.data.categories || [])).size,
@@ -37,10 +41,10 @@ const stats = {
 >
   <div class="md3-layout-grid">
     <div class="content-wrapper">
-      <!-- 头部：核心信息 -->
+      <!-- 头部：Hero Section -->
       <header class="page-header">
-        <h1 class="display-large">欢迎到访 Vahiru's blog</h1>
-        <p class="body-large secondary-text">这里是一只猫猫的自留地，记录技术、生活与胡思乱想。</p>
+        <h1 class="display-medium hero-title">欢迎到访 Vahiru's blog</h1>
+        <p class="body-large secondary-text">记录技术、生活与胡思乱想。</p>
         
         <div class="header-actions">
           <md-filled-button href="/about">
@@ -53,52 +57,26 @@ const stats = {
         </div>
       </header>
 
-      <!-- 侧边栏：移动端会排到头部下方，文章上方 -->
-      <aside class="sidebar">
-        <section class="sidebar-section stats-widget">
-          <h3 class="label-large">全站统计</h3>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-value display-small">{stats.posts}</span>
-              <span class="stat-label label-medium">文章</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value display-small">{stats.categories}</span>
-              <span class="stat-label label-medium">分类</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value display-small">{stats.tags}</span>
-              <span class="stat-label label-medium">标签</span>
-            </div>
-          </div>
-        </section>
-
-        {categories.length > 0 && (
-          <section class="sidebar-section">
-            <h3 class="label-large">导航</h3>
-            <md-chip-set>
-              {categories.map(cat => (
-                <md-assist-chip label={cat} href={`/categories/${cat}/1`}>
-                  <md-icon slot="icon">category</md-icon>
-                </md-assist-chip>
-              ))}
-            </md-chip-set>
-          </section>
-        )}
-      </aside>
-
-      <!-- 文章流 -->
+      <!-- 文章流 (主体部分) -->
       <main class="post-feed">
-        <h2 class="title-large section-label">Recent Posts</h2>
-        <div class="vertical-posts">
-          {posts.slice(0, 8).map((post) => <PostCard post={post} />)}
-          
-          {posts.length === 0 && (
-            <div class="empty-state">
-              还没有文章，请在 src/content/blog/ 下创建 .md 文件
+        {featuredPost && (
+            <section class="featured-section">
+                <PostCard post={featuredPost} featured={true} />
+            </section>
+        )}
+
+        <section class="recent-posts">
+            <h2 class="title-medium section-label">最近更新</h2>
+            <div class="vertical-posts">
+              {regularPosts.map((post) => <PostCard post={post} />)}
+              
+              {posts.length === 0 && (
+                <div class="empty-state">
+                  还没有文章，请在 src/content/blog/ 下创建 .md 文件
+                </div>
+              )}
             </div>
-          )}
-        </div>
+        </section>
 
         {posts.length > 8 && (
           <div class="pagination-footer">
@@ -109,6 +87,40 @@ const stats = {
           </div>
         )}
       </main>
+
+      <!-- 侧边栏 (辅助部分) -->
+      <aside class="sidebar">
+        <section class="sidebar-section stats-widget">
+          <h3 class="label-large section-title">全站统计</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="title-medium stat-value">{stats.posts}</span>
+              <span class="label-small stat-label">文章</span>
+            </div>
+            <div class="stat-item">
+              <span class="title-medium stat-value">{stats.categories}</span>
+              <span class="label-small stat-label">分类</span>
+            </div>
+            <div class="stat-item">
+              <span class="title-medium stat-value">{stats.tags}</span>
+              <span class="label-small stat-label">标签</span>
+            </div>
+          </div>
+        </section>
+
+        {categories.length > 0 && (
+          <section class="sidebar-section">
+            <h3 class="label-large section-title">快速导航</h3>
+            <md-chip-set>
+              {categories.map(cat => (
+                <md-assist-chip label={cat} href={`/categories/${cat}/1`}>
+                  <md-icon slot="icon">category</md-icon>
+                </md-assist-chip>
+              ))}
+            </md-chip-set>
+          </section>
+        )}
+      </aside>
     </div>
   </div>
 </Layout>
@@ -124,188 +136,165 @@ const stats = {
 </script>
 
 <style>
-  /* === MD3 响应式布局网格实现 === */
+  /* === M3 Adaptive Layout Grid === */
   .md3-layout-grid {
     display: flex;
     flex-direction: column;
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    padding: 0 var(--md-sys-layout-margin);
   }
 
-  /* 页面头部 */
+  /* Content Wrapper: 12-column logic */
+  .content-wrapper {
+    display: grid;
+    gap: var(--md-sys-layout-gutter);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Page Header (Hero) */
   .page-header {
-    padding: 4rem 1rem 3rem 1rem;
-    max-width: 800px; /* 限制阅读宽度 */
+    padding: 6rem 0 4rem 0;
   }
 
-  .page-header h1 {
-    margin-bottom: 1rem;
+  .hero-title {
+    margin-bottom: 0.75rem;
     color: var(--md-sys-color-on-surface);
+    font-weight: 400;
   }
 
   .secondary-text {
     color: var(--md-sys-color-on-surface-variant);
     margin-bottom: 2rem;
+    max-width: 600px;
+    opacity: 0.8;
   }
 
   .header-actions {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
   }
 
-  /* 内容包装器：桌面端 12 列网格逻辑 */
-  .content-wrapper {
-    display: grid;
-    gap: 24px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  /* 桌面端 (Expanded: >= 840px) */
+  /* Grid Layouts by Device Size */
+  
+  /* Desktop (Expanded: >= 840px) - 12 Columns */
   @media (min-width: 840px) {
     .content-wrapper {
       grid-template-columns: repeat(12, 1fr);
-      padding: 2rem 1rem 0 1rem;
+      row-gap: 4rem;
     }
     .page-header {
-      grid-column: span 8;
-      grid-row: 1;
+      grid-column: span 12;
     }
     .post-feed {
-      grid-column: span 8;
-      grid-row: 2;
+      grid-column: span 9;
     }
     .sidebar {
-      grid-column: span 4;
-      grid-row: 1 / 3;
+      grid-column: span 3;
       position: sticky;
       top: 2rem;
       height: fit-content;
     }
-    .desktop-only {
-      display: block;
-    }
   }
 
-  /* 平板端 (Medium: 600-839px) */
+  /* Tablet (Medium: 600-839px) - 8 Columns */
   @media (min-width: 600px) and (max-width: 839px) {
     .content-wrapper {
       grid-template-columns: repeat(8, 1fr);
-      padding: 0 1.5rem;
+      row-gap: 3rem;
     }
     .page-header, .sidebar, .post-feed {
       grid-column: span 8;
     }
-    .desktop-only {
-      display: none;
-    }
   }
 
-  /* 移动端 (Compact: < 600px) */
+  /* Mobile (Compact: < 600px) - 4 Columns */
   @media (max-width: 599px) {
     .content-wrapper {
-      display: block; /* 移动端改用块级布局，简化对齐 */
-      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
     }
-    .page-header, .sidebar, .post-feed {
-      width: 100%;
-      margin: 0 auto;
+    .hero-title {
+      font-size: var(--md-sys-typescale-display-small-size);
+      line-height: var(--md-sys-typescale-display-small-line-height);
     }
     .page-header {
-      padding: 1rem 0;
-    }
-    .page-header h1 {
-      font-size: 2.25rem; /* 进一步缩小标题以适应窄屏 */
-      line-height: 1.2;
-    }
-    .sidebar-section {
-      padding: 1rem 0;
-      background: transparent;
-      border-bottom: 1px solid var(--md-sys-color-outline-variant);
-      border-radius: 0;
-      margin-bottom: 0;
-    }
-    .desktop-only {
-      display: none;
-    }
-    .vertical-posts {
-      gap: 20px;
-      padding: 1.5rem 0;
+        padding: 3rem 0;
     }
   }
 
-  /* 文章流样式 */
+  /* Sections */
   .section-label {
     margin-bottom: 1.5rem;
-    color: var(--md-sys-color-on-surface);
-    opacity: 0.8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
+    display: block;
+    opacity: 0.7;
+  }
+
+  .featured-section {
+      grid-column: span 12;
+      margin-bottom: 1rem;
   }
 
   .vertical-posts {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 24px;
   }
 
-  .empty-state {
-    padding: 4rem 2rem;
-    text-align: center;
-    background-color: var(--md-sys-color-surface-container-low);
-    border-radius: 16px;
-    color: var(--md-sys-color-on-surface-variant);
-    border: 1px dashed var(--md-sys-color-outline-variant);
-  }
-
-  .pagination-footer {
-    margin-top: 3rem;
-    text-align: center;
-  }
-
-  /* 侧边栏样式 */
+  /* Sidebar Styling */
   .sidebar-section {
     background-color: var(--md-sys-color-surface-container);
     padding: 1.5rem;
-    border-radius: 24px;
+    border-radius: 28px; /* M3 Extra Large */
     margin-bottom: 24px;
-    box-shadow: var(--md-sys-elevation-level1);
   }
 
-  .sidebar-section h3 {
-    margin-bottom: 1rem;
-    color: var(--md-sys-color-primary);
-    font-weight: 600;
+  .section-title {
+    margin-bottom: 1.25rem;
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
   }
 
-  .social-icons {
-    display: flex;
-    gap: 8px;
-  }
-
-  /* 统计小部件样式 */
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    text-align: center;
+    gap: 8px;
   }
 
   .stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: var(--md-sys-color-surface-container-low);
+    padding: 12px 4px;
+    border-radius: 16px;
   }
 
   .stat-value {
     color: var(--md-sys-color-primary);
-    font-weight: 500;
   }
 
   .stat-label {
     color: var(--md-sys-color-on-surface-variant);
-    opacity: 0.8;
+  }
+
+  .pagination-footer {
+    margin-top: 4rem;
+    text-align: center;
+  }
+
+  .empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: var(--md-sys-color-surface-container-low);
+    border-radius: 28px;
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px dashed var(--md-sys-color-outline-variant);
   }
 </style>
