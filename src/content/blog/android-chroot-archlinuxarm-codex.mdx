@@ -1,0 +1,226 @@
+---
+title: "在 Android chroot 环境中部署 Arch Linux ARM 与 Codex CLI"
+date: 2026-05-21
+description: "记录在已 root 的 Android 系统中部署 Arch Linux ARM 根文件系统、初始化环境、解决 Codex CLI TUI 挂起问题，以及优化 Termux 方向键配置的全过程。"
+tags: ["Android", "Arch Linux", "Termux", "Codex"]
+categories: ["Tech", "Guide"]
+draft: false
+---
+import Note from 'astro-mochi-tones:components/express/Note.astro';
+import Copy from 'astro-mochi-tones:components/express/Copy.astro';
+import Kbd from 'astro-mochi-tones:components/express/Kbd.astro';
+import Border from 'astro-mochi-tones:components/container/Border.astro';
+import Folding from 'astro-mochi-tones:components/container/Folding.astro';
+import Timeline from 'astro-mochi-tones:components/data/Timeline.astro';
+import TimelineNode from 'astro-mochi-tones:components/data/TimelineNode.astro';
+
+最近我在 Android 设备上部署了一套 Arch Linux ARM 环境。初衷非常纯粹：在已 root 的 Android 系统中通过 chroot 运行一个相对完整的 Linux 用户态，以便能够无缝使用 fish、pacman 及 Codex CLI 等熟悉的开发工具。
+
+本文将详细记录了我在部署chroot中遇到的问题，希望能对你有所帮助。
+
+<Note color="warning" title="前置条件">
+  本教程仅适用于已获取 Root 权限的 Android 设备。涉及的操作包括 chroot、挂载系统关键目录等高权限指令。如果你不清楚这些操作的含义，请务必在备用设备上进行测试。
+</Note>
+
+## 整体流程
+
+<Timeline>
+  <TimelineNode date="步骤 1">
+    准备 Arch Linux ARM 根文件系统 (Rootfs)。
+  </TimelineNode>
+  <TimelineNode date="步骤 2">
+    编写 chroot 启动脚本，配置挂载与环境隔离。
+  </TimelineNode>
+  <TimelineNode date="步骤 3">
+    初始化系统，配置密钥环、更新系统及安装核心工具。
+  </TimelineNode>
+  <TimelineNode date="步骤 4">
+    排查并修复 Codex CLI TUI 在 chroot 中卡住的问题。
+  </TimelineNode>
+  <TimelineNode date="步骤 5">
+    优化 Termux 额外按键布局，提升移动端交互体验。
+  </TimelineNode>
+</Timeline>
+
+## 准备根文件系统
+
+首先，进入 root 环境：
+
+```bash
+tsu
+```
+
+建议将 Arch Linux ARM 部署在 `/data/local/arch`。该位置不受系统分区限制，且具备足够的读写权限，适合存放额外的 Linux 用户态环境。
+
+```bash
+mkdir -p /data/local/arch
+cd /data/local/arch
+```
+
+下载适用于 aarch64 架构的 Arch Linux ARM 根文件系统：
+
+```bash
+wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
+```
+
+解压时必须保留完整的文件权限与属主信息，因此需使用 `-xpf` 和 `--numeric-owner` 参数：
+
+```bash
+tar -xpf ArchLinuxARM-aarch64-latest.tar.gz --numeric-owner
+rm ArchLinuxARM-aarch64-latest.tar.gz
+```
+
+<Note color="blue" title="为什么要保留权限？">
+  根文件系统中包含大量具有特定权限位的系统目录和设备文件。如果解压时丢失了权限或属主信息，会导致 pacman 报错、sudo 失灵或临时目录不可写等连锁问题。
+</Note>
+
+## 配置 chroot 启动脚本
+
+为了方便进入 Arch 环境，我们需要编写一个脚本来自动化挂载和环境变量设置。
+
+```sh
+#!/system/bin/sh
+
+DIR="/data/local/arch"
+
+# 确保在 Android 外部环境时使用正确的 PATH
+export PATH=/system/bin:/system/xbin:/sbin:/su/bin:/vendor/bin
+
+# 挂载必要的内核虚拟文件系统
+mountpoint -q "$DIR/dev" 2>/dev/null || mount --bind /dev "$DIR/dev" 2>/dev/null
+mountpoint -q "$DIR/dev/pts" 2>/dev/null || mount --bind /dev/pts "$DIR/dev/pts" 2>/dev/null
+mountpoint -q "$DIR/proc" 2>/dev/null || mount --bind /proc "$DIR/proc" 2>/dev/null
+mountpoint -q "$DIR/sys" 2>/dev/null || mount --bind /sys "$DIR/sys" 2>/dev/null
+
+# 配置 DNS 解析
+rm -f "$DIR/etc/resolv.conf"
+{
+    echo "nameserver 223.5.5.5"
+    echo "nameserver 1.1.1.1"
+} > "$DIR/etc/resolv.conf"
+
+# 确保 /tmp 目录存在且权限正确（带 Sticky Bit）
+mkdir -p "$DIR/tmp"
+chmod 1777 "$DIR/tmp"
+
+# 定位 chroot 二进制文件
+if [ -x /system/bin/chroot ]; then
+    CHROOT_CMD="/system/bin/chroot"
+elif command -v chroot >/dev/null 2>&1; then
+    CHROOT_CMD="$(command -v chroot)"
+else
+    echo "Error: chroot command not found."
+    exit 1
+fi
+
+# 使用 env -i 清空环境变量，彻底隔离 Android/Termux 环境
+# 避免 TMPDIR、HOME 等变量污染 Arch 内部环境
+exec "$CHROOT_CMD" "$DIR" /usr/bin/env -i \
+    HOME=/root \
+    USER=root \
+    LOGNAME=root \
+    SHELL=/bin/fish \
+    TERM="${TERM:-xterm-256color}" \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TMPDIR=/tmp \
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin \
+    /bin/fish -l
+```
+
+<Folding title="提示：如果尚未安装 fish，请先改用 bash">
+
+默认脚本最后一行进入的是 `/bin/fish`。在初次安装阶段，请将其修改为 `/bin/bash -l`，待进入系统安装并配置好 fish 后再切回。
+
+</Folding>
+
+## 初始化 Arch Linux
+
+初次进入系统后，首要任务是初始化 pacman 密钥环。Arch Linux ARM 的镜像更新频率较低，直接安装包往往会因签名过期而失败。
+
+```bash
+pacman-key --init
+pacman-key --populate archlinuxarm
+pacman -Syu
+```
+
+如果遇到 `keyring` 相关的验证错误，请先单独更新密钥环包：
+
+```bash
+pacman -Sy archlinuxarm-keyring
+pacman -Syu
+```
+
+接着安装必备的基础工具：
+
+```bash
+pacman -S base-devel fish git nano util-linux
+```
+
+注意安装 `util-linux`，它提供的 `script` 工具是后续解决 TUI 问题的关键。
+
+## Codex CLI 启动挂起问题
+
+在 chroot 环境下直接运行 `codex` 时，我遇到了一个典型问题：**程序启动后会挂起在初始化阶段，界面无法正常渲染**，且 <Kbd>Ctrl</Kbd> + <Kbd>C</Kbd> 等中断信号失效，导致终端进入假死状态。
+
+这通常是因为 chroot 内部的 TTY 分配不完整，导致基于 PTY 的交互式 TUI 程序无法正常接管终端。
+
+### 排查思路
+
+首先验证 `codex exec` 非交互模式是否正常：
+
+```bash
+codex exec "echo connectivity check"
+```
+
+如果上述命令能正常返回结果，但直接运行 `codex` 卡死，则可以断定问题出在 PTY/TTY 的接管上。
+
+### 解决方案：使用 script 包装伪终端
+
+最有效的绕过方式是利用 `script` 命令为 Codex 包装一个标准的伪终端（pseudo-tty）：
+
+```bash
+script -q -c "codex --no-alt-screen" /dev/null
+```
+
+`script` 会创建一个新的 PTY 会话，这能让大多数 TUI 程序在这种受限环境下找回正确的终端状态。
+
+### 在 fish 中实现透明调用
+
+为了能够像在常规环境下一样直接使用 `codex` 命令，我们需要配置 fish 函数：
+
+1.  确认 `codex` 的真实路径（例如 `/usr/bin/codex`）。
+2.  编辑函数文件 `~/.config/fish/functions/codex.fish`：
+
+```fish
+function codex
+    script -q -c "/usr/bin/codex --no-alt-screen" /dev/null
+end
+```
+
+3.  重载配置并验证：
+
+```bash
+source ~/.config/fish/functions/codex.fish
+type codex # 应显示为 fish function
+```
+
+## 优化 Termux 交互体验
+
+在移动端操作 CLI 时，termux的默认布局有些捉襟见肘，尤其是当我们需要多个session频繁切换的时候，侧栏难以划出。在此分享一个我常用的termux布局。
+
+```bash
+mkdir -p ~/.termux
+# 清理旧配置并写入新布局
+sed -i '/^extra-keys[[:space:]]*=/d' ~/.termux/termux.properties 2>/dev/null
+printf "%s\n" "extra-keys = [['ESC','TAB','CTRL','UP','ALT','DRAWER','KEYBOARD'],['HOME','-','LEFT','DOWN','RIGHT','-','END']]" >> ~/.termux/termux.properties
+termux-reload-settings
+```
+
+最终布局效果如下，加入了我在使用过程中需要用到的快捷键
+
+```text
+ESC   TAB   CTRL    UP     ALT   DRAWER  KEYBOARD
+HOME    -   LEFT   DOWN   RIGHT    -       END
+```
+

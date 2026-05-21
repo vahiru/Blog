@@ -10,14 +10,14 @@
         "astro": "astro"
     },
     "dependencies": {
-        "@astrojs/check": "^0.9.5",
-        "@astrojs/mdx": "^4.3.13",
+        "@astrojs/check": "^0.9.2",
+        "@astrojs/mdx": "^5.0.6",
         "@astrojs/rss": "^4.0.14",
         "@astrojs/sitemap": "^3.6.0",
         "@material/material-color-utilities": "^0.3.0",
         "@material/web": "^2.4.1",
         "@waline/client": "^3.8.0",
-        "astro": "^5.16.0",
+        "astro": "^6.3.6",
         "astro-mochi-tones": "file:./themes/astro-mochi-tones",
         "fuse.js": "^7.1.0",
         "markdown-it": "^14.1.0",

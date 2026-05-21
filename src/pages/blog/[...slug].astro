@@ -1,6 +1,6 @@
 ---
 // src/pages/blog/[...slug].astro
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import Layout from "astro-mochi-tones:layouts/Layout.astro";
 import Waline from "astro-mochi-tones:components/Waline.astro";
 import "@material/web/icon/icon.js";
@@ -14,8 +14,18 @@ interface Props {
     nextPost: CollectionEntry<"blog"> | null;
 }
 
+function getPostSlug(entry: CollectionEntry<"blog">) {
+    return "slug" in entry && typeof entry.slug === "string"
+        ? entry.slug
+        : entry.id.replace(/\.(md|mdx)$/i, "");
+}
+
 export async function getStaticPaths() {
     const allPosts = await getCollection("blog");
+    const getSlug = (entry: CollectionEntry<"blog">) =>
+        "slug" in entry && typeof entry.slug === "string"
+            ? entry.slug
+            : entry.id.replace(/\.(md|mdx)$/i, "");
     const sortedPosts = allPosts
         .filter((p) => !p.data.draft)
         .sort((a, b) => {
@@ -30,18 +40,18 @@ export async function getStaticPaths() {
         const prevPost =
             index < sortedPosts.length - 1 ? sortedPosts[index + 1] : null;
         return {
-            params: { slug: post.slug },
+            params: { slug: getSlug(post) },
             props: { post, prevPost, nextPost },
         };
     });
 }
 
 const { post, prevPost, nextPost } = Astro.props;
-const { Content, headings } = await post.render();
+const { Content, headings } = await render(post);
 
 const fallbackTitle = (entry: CollectionEntry<"blog"> | null) =>
     entry?.data.title ||
-    entry?.slug
+    (entry ? getPostSlug(entry) : "")
         ?.split("/")
         .pop()
         ?.replace(/-/g, " ") ||
@@ -165,7 +175,7 @@ const description = post.data.description || post.body?.substring(0, 100) || pos
                 {
                     prevPost ? (
                         <a
-                            href={`/blog/${prevPost.slug}`}
+                            href={`/blog/${getPostSlug(prevPost)}`}
                             class="nav-link prev"
                         >
                             <div class="nav-label">
@@ -181,7 +191,7 @@ const description = post.data.description || post.body?.substring(0, 100) || pos
                 {
                     nextPost && (
                         <a
-                            href={`/blog/${nextPost.slug}`}
+                            href={`/blog/${getPostSlug(nextPost)}`}
                             class="nav-link next"
                         >
                             <div class="nav-label">
