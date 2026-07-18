@@ -34,7 +34,7 @@ export default defineConfig({
                 locale: "zh_CN",
 
                 // 静态资源和主题生成的端点路径。
-                favicon: "/favicon.svg",
+                favicon: "/favicon.png",
                 defaultImage: "/images/default-og.jpg",
                 rssPath: "/rss.xml",
                 searchPath: "/search.json",
