@@ -1,5 +1,77 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="8" r="3"/>
-  <circle cx="8" cy="14" r="3"/>
-  <circle cx="16" cy="14" r="3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Vahiru's catgirl OC</title>
+
+  <!-- Material 3 primary container -->
+  <rect x="2" y="2" width="60" height="60" rx="18" fill="#eaddff" />
+
+  <!-- Wide cat ears keep the character recognizable at favicon sizes. -->
+  <path
+    d="M25 20.5C20 16 13 12 6.5 16.5c3.5 4 9 6.5 16 6.5Z"
+    fill="#f7f2fa"
+    stroke="#49454f"
+    stroke-width="2.5"
+    stroke-linejoin="round"
+  />
+  <path d="M20.5 18.8c-3.7-2.5-7-3.2-10-2.2 2.8 2.1 6.2 3.3 10 3.6Z" fill="#f3b8c4" />
+  <path
+    d="M39 20.5C44 16 51 12 57.5 16.5c-3.5 4-9 6.5-16 6.5Z"
+    fill="#f7f2fa"
+    stroke="#49454f"
+    stroke-width="2.5"
+    stroke-linejoin="round"
+  />
+  <path d="M43.5 18.8c3.7-2.5 7-3.2 10-2.2-2.8 2.1-6.2 3.3-10 3.6Z" fill="#f3b8c4" />
+
+  <!-- Blue-gray back hair echoes the OC's darker hair tips. -->
+  <path
+    d="M13.5 35.5C13.5 21 21.5 13 32 13s18.5 8 18.5 22.5c0 7.5 2 12.5 4.5 17-5.5-1-8.5 2-13 0-3 3.5-7 3.5-10 0-3 3.5-7 3.5-10 0-4.5 2-7.5-1-13 0 2.5-4.5 4.5-9.5 4.5-17Z"
+    fill="#7d899d"
+    stroke="#49454f"
+    stroke-width="2.5"
+    stroke-linejoin="round"
+  />
+
+  <!-- Face and silver fringe -->
+  <ellipse cx="32" cy="37.5" rx="16.5" ry="15" fill="#ffe8e2" stroke="#49454f" stroke-width="2.5" />
+  <path
+    d="M15.5 34c.4-13 7-19.5 16.5-19.5S48 21 48.5 32c-3.7-1.8-6.2-5-7.5-9.2-1.3 4.2-4 7.2-8.5 8.7 1.1-3.5.8-6.8-.5-10-2.8 6.3-8.3 10.5-16.5 12.5Z"
+    fill="#f7f2fa"
+    stroke="#49454f"
+    stroke-width="2.5"
+    stroke-linejoin="round"
+  />
+  <path d="M18.5 31c-2.2 5-2 12.5 1 18.5 2.3-4.5 3-10.5 2.2-17.5Z" fill="#f7f2fa" stroke="#49454f" stroke-width="2" />
+  <path d="M45.5 31c2.2 5 2 12.5-1 18.5-2.3-4.5-3-10.5-2.2-17.5Z" fill="#f7f2fa" stroke="#49454f" stroke-width="2" />
+
+  <!-- Gold and blue heterochromia -->
+  <ellipse cx="25.2" cy="38.5" rx="3.7" ry="4.3" fill="#f4c95d" stroke="#49454f" stroke-width="1.7" />
+  <ellipse cx="38.8" cy="38.5" rx="3.7" ry="4.3" fill="#64b5e8" stroke="#49454f" stroke-width="1.7" />
+  <ellipse cx="25.8" cy="39.2" rx="1.15" ry="2" fill="#594a2e" />
+  <ellipse cx="38.2" cy="39.2" rx="1.15" ry="2" fill="#244966" />
+  <circle cx="24.3" cy="36.9" r="1" fill="#fff" />
+  <circle cx="37.9" cy="36.9" r="1" fill="#fff" />
+  <path d="M29.5 46.2c1.6 1.3 3.4 1.3 5 0" fill="none" stroke="#7d5260" stroke-width="1.8" stroke-linecap="round" />
+
+  <!-- Material blue bow with the OC's gold star clasp -->
+  <path
+    d="M45.5 20.5c-3.8-2.8-6.2-1.3-5.5 2.7.6 3.7 3 4.4 6.5 1.7Z"
+    fill="#a9c7f7"
+    stroke="#49454f"
+    stroke-width="1.8"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M48.5 20.5c3.8-2.8 6.2-1.3 5.5 2.7-.6 3.7-3 4.4-6.5 1.7Z"
+    fill="#a9c7f7"
+    stroke="#49454f"
+    stroke-width="1.8"
+    stroke-linejoin="round"
+  />
+  <path
+    d="m47 19.7 1.1 2 2.3.4-1.6 1.7.3 2.3-2.1-1-2.1 1 .3-2.3-1.6-1.7 2.3-.4Z"
+    fill="#ffd966"
+    stroke="#49454f"
+    stroke-width="1.2"
+    stroke-linejoin="round"
+  />
 </svg>
