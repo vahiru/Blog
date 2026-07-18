@@ -12,6 +12,7 @@
         }
     },
     "include": [
+        ".astro/types.d.ts",
         "src",
         "themes/astro-mochi-tones"
     ]

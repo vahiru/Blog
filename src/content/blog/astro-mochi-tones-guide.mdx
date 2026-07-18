@@ -5,7 +5,7 @@ date: 2024-12-21
 draft: false
 categories: ["Tech", "Guide"]
 tags: ["Astro", "Theme", "Documentation"]
-cover: "https://via.placeholder.com/800x400"
+cover: "/images/cover.jpg"
 pinned: true
 ---
 import Mark from 'astro-mochi-tones:components/express/Mark.astro';
@@ -194,7 +194,7 @@ import Video from '../../components/express/Video.astro';
 
 **效果演示：**
 
-<Image src="https://via.placeholder.com/600x400" desc="A beautiful placeholder" download="true" />
+<Image src="/images/helloworld.jpg" desc="博客示例封面" download="true" />
 <Bvideo bv="BV1ae4y127K5" />
 <Video youtube="LB8KwiiUGy0" />
 
@@ -317,7 +317,7 @@ import Split from '../../components/container/Split.astro';
 
 <Split>
   <div>
-    <Image src="https://via.placeholder.com/400x300" desc="左侧图片" />
+    <Image src="/images/cover.jpg" desc="左侧图片" />
   </div>
   <div>
     ### 右侧内容
@@ -334,6 +334,7 @@ import Split from '../../components/container/Split.astro';
 ```astro
 import Timeline from '../../components/data/Timeline.astro';
 import TimelineNode from '../../components/data/TimelineNode.astro';
+import Toc from '../../components/data/Toc.astro';
 import Sites from '../../components/data/Sites.astro';
 import GhCard from '../../components/data/GhCard.astro';
 import OKR from '../../components/express/OKR.astro';
@@ -341,6 +342,32 @@ import KeyResult from '../../components/express/KeyResult.astro';
 import Icon from '../../components/express/Icon.astro';
 import Hashtag from '../../components/express/Hashtag.astro';
 ```
+
+### 目录容器 (Toc)
+
+```astro
+<Toc title="本节目录" open>
+  <ul>
+    <li><a href="#timeline">时间轴</a></li>
+    <li>
+      <a href="#sites">站点与友链</a>
+      <ul><li><a href="#github-card">GitHub 卡片</a></li></ul>
+    </li>
+  </ul>
+</Toc>
+```
+
+**效果演示：**
+
+<Toc title="数据组件目录" open>
+  <ul>
+    <li><a href="#时间轴-timeline">时间轴</a></li>
+    <li>
+      <a href="#站点友链-sites">站点与友链</a>
+      <ul><li><a href="#github-卡片">GitHub 卡片</a></li></ul>
+    </li>
+  </ul>
+</Toc>
 
 ### 时间轴 (Timeline)
 
