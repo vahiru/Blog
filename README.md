@@ -164,6 +164,11 @@ import TimelineNode from '../../components/data/TimelineNode.astro';
 npm run build
 ```
 
+构建时会通过 Satori 和 resvg 为每篇已发布文章生成一张
+`dist/og/<slug>.png` 社交预览图。模板位于 `src/lib/og-image.tsx`，
+静态端点位于 `src/pages/og/[...slug].png.ts`；文章页会自动将对应图片写入
+Open Graph 与 Twitter Card 元信息，无需在 Frontmatter 中额外配置。
+
 你可以直接将 `dist` 文件夹部署到 **GitHub Pages**、**Cloudflare Pages** 或 **Vercel**。
 
 > **注意**：请确保你的部署平台配置为 **Static Site / HTML** 托管模式。

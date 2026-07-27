@@ -48,6 +48,7 @@ const fallbackTitle = (entry: CollectionEntry<"blog"> | null) =>
 
 const postTitle = fallbackTitle(post);
 const postCover = post.data.cover;
+const socialImage = `/og/${getPostSlug(post)}.png`;
 const postTags = post.data.tags ?? [];
 const postCategories = post.data.categories ?? [];
 const formattedDate = post.data.date.toLocaleDateString(themeConfig.lang, {
@@ -79,7 +80,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 <Layout
   title={postTitle}
   description={description}
-  image={postCover}
+  image={socialImage}
   articleDate={post.data.date}
 >
   <div class="blog-layout">
