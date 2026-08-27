@@ -158,12 +158,29 @@ draft: false
 
 ### 第 3 步：添加图片
 
-1. 把图片放到 `public/images/` 目录
-2. 在文章中这样引用：
+1. 把图片放到 **`src/assets/images/`** 目录
+2. 压缩一遍（控制仓库体积和构建耗时）：
+
+```bash
+bash scripts/optimize-images.sh
+```
+
+3. 在文章中按 `/images/...` 引用（写法不变，主题会自动解析到 `src/assets/images/`）：
 
 ```markdown
 ![图片描述](/images/my-photo.jpg)
 ```
+
+```mdx
+<Image src="/images/my-photo.jpg" desc="说明文字" />
+```
+
+> **为什么放 `src/assets/` 而不是 `public/`**
+>
+> `src/assets/images/` 下的图片会经过 Astro 处理：按实际显示尺寸生成多档 WebP，
+> 首页 120px 的缩略图只会下载 180/360px 的版本，而不是整张原图。
+> `public/` 里的文件是原样发布的，只适合放需要固定地址的图（比如社交预览图
+> `public/images/cover.jpg`）。
 
 ---
 

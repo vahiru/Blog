@@ -35,7 +35,9 @@ export default defineConfig({
 
                 // 静态资源和主题生成的端点路径。
                 favicon: "/favicon.png",
-                defaultImage: "/images/default-og.jpg",
+                // 社交预览图。放在 src/assets/images/ 下，会被自动压到 1200px 宽的 JPEG。
+                // （原来指向的 default-og.jpg 其实是一张 404 插画。）
+                defaultImage: "/images/cover.jpg",
                 rssPath: "/rss.xml",
                 searchPath: "/search.json",
 

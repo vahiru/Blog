@@ -1,10 +1,12 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import { isLocalAsset, resolveImage } from "astro-mochi-tones:utils/images";
 import Layout from "astro-mochi-tones:layouts/Layout.astro";
 import Waline from "astro-mochi-tones:components/Waline.astro";
 import themeConfig from "astro-mochi-tones:config";
-import "@material/web/icon/icon.js";
-import "@material/web/divider/divider.js";
+// md-icon / md-divider 由 Layout 的客户端脚本统一注册，这里不需要再导入
+// （放在 frontmatter 里属于服务端导入，既进不了浏览器包也没有实际作用）。
 
 interface Props {
   post: CollectionEntry<"blog">;
@@ -47,7 +49,8 @@ const fallbackTitle = (entry: CollectionEntry<"blog"> | null) =>
   labels.untitled;
 
 const postTitle = fallbackTitle(post);
-const postCover = post.data.cover;
+// 头图是全宽展示（最大约 820px，2x 屏需要 1640px），交给 astro:assets 出多档尺寸。
+const postCover = await resolveImage(post.data.cover);
 const socialImage = `/og/${getPostSlug(post)}.png`;
 const postTags = post.data.tags ?? [];
 const postCategories = post.data.categories ?? [];
@@ -98,15 +101,29 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
                 <div class="cover-fallback" aria-hidden="true">
                   <md-icon>article</md-icon>
                 </div>
-                <img
-                  src={postCover}
-                  alt={`《${postTitle}》封面`}
-                  class="post-cover"
-                  data-post-cover
-                  decoding="async"
-                  fetchpriority="high"
-                  referrerpolicy="no-referrer"
-                />
+                {isLocalAsset(postCover) ? (
+                  <Image
+                    src={postCover}
+                    alt={`《${postTitle}》封面`}
+                    class="post-cover"
+                    data-post-cover
+                    widths={[420, 820, 1240, 1640].filter((width) => width <= postCover.width)}
+                    sizes="(min-width: 1100px) 820px, (min-width: 700px) 78vw, 92vw"
+                    format="webp"
+                    decoding="async"
+                    fetchpriority="high"
+                  />
+                ) : (
+                  <img
+                    src={postCover}
+                    alt={`《${postTitle}》封面`}
+                    class="post-cover"
+                    data-post-cover
+                    decoding="async"
+                    fetchpriority="high"
+                    referrerpolicy="no-referrer"
+                  />
+                )}
               </div>
             ) : (
               <div class="title-banner" style={bannerStyle} aria-hidden="true">
