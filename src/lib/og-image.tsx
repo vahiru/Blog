@@ -66,8 +66,8 @@ function withAlpha(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-/** 卡片内容区宽度，文本装配以此为准。 */
-const CONTENT_WIDTH = WIDTH - 40 * 2 - 56 * 2;
+/** 内容区宽度（画布减去左右 72px 内边距），文本装配以此为准。 */
+const CONTENT_WIDTH = WIDTH - 72 * 2;
 
 /** 全角字符按 1em 估宽，其余按 0.55em——用来估算折行足够精确。 */
 const emWidth = (character: string) =>
@@ -134,45 +134,33 @@ export async function generateOgImage(input: OgImageInput) {
   const brandMarkSrc = `data:image/png;base64,${(await brandMark).toString("base64")}`;
 
   const svg = await satori(
+    /*
+      颜色直接铺满整张画布：社交平台展示预览图时自己会加圆角和边框，
+      图里再嵌一层圆角卡片就成了「框中框」。装饰沿用站点 hero 的
+      描边圆环；底色用 secondary-container 以保证任何色相都柔和。
+    */
     <div
       lang="zh-CN"
       style={{
+        position: "relative",
         display: "flex",
+        flexDirection: "column",
         width: WIDTH,
         height: HEIGHT,
-        padding: 40,
-        background: color.page,
+        padding: "64px 72px",
+        background: color.surface,
+        color: color.onSurface,
         fontFamily: "Noto Sans SC",
+        overflow: "hidden",
       }}
     >
-      {/*
-        整张卡片沿用站点首页 hero 的构成：整块着色的圆角面板、非对称圆角、
-        右下角一圈描边圆环。底色用 secondary-container 以保证任何色相都柔和。
-      */}
-      <div
-        style={{
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          height: "100%",
-          padding: "48px 56px",
-          borderTopLeftRadius: SHAPE.extraExtraLarge,
-          borderTopRightRadius: SHAPE.extraExtraLarge,
-          borderBottomRightRadius: SHAPE.large,
-          borderBottomLeftRadius: SHAPE.extraExtraLarge,
-          background: color.surface,
-          color: color.onSurface,
-          overflow: "hidden",
-        }}
-      >
         <div
           style={{
             position: "absolute",
-            right: -170,
-            bottom: -400,
-            width: 620,
-            height: 620,
+            right: -200,
+            bottom: -430,
+            width: 700,
+            height: 700,
             borderRadius: SHAPE.full,
             border: `2px solid ${withAlpha(color.onSurface, 0.14)}`,
           }}
@@ -243,7 +231,8 @@ export async function generateOgImage(input: OgImageInput) {
             width: CONTENT_WIDTH,
           }}
         >
-          <div style={{ ...title.style, fontWeight: 500 }}>{title.text}</div>
+          {/* balance 让多行标题两行长度均衡，避免「…完全指 / 南」这种孤字折行。 */}
+          <div style={{ ...title.style, fontWeight: 500, textWrap: "balance" }}>{title.text}</div>
           <div
             style={{
               ...description.style,
@@ -294,7 +283,6 @@ export async function generateOgImage(input: OgImageInput) {
             {formatDate(input.date)}
           </div>
         </div>
-      </div>
     </div>,
     {
       width: WIDTH,
@@ -307,7 +295,7 @@ export async function generateOgImage(input: OgImageInput) {
   );
 
   return new Resvg(svg, {
-    background: color.page,
+    background: color.surface,
     fitTo: { mode: "width", value: WIDTH },
   }).render().asPng();
 }
