@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
+import { OG_PALETTES, type OgPalette } from "./og-palettes";
 
 interface OgImageInput {
   title: string;
@@ -17,61 +18,91 @@ interface OgImageInput {
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-const palettes = {
-  journal: {
-    background: "#f5eeea",
-    surface: "#fff8f5",
-    surfaceHigh: "#f0e4de",
-    primary: "#755846",
-    primaryContainer: "#ffdbc8",
-    onPrimaryContainer: "#2c160b",
-    secondary: "#655c57",
-    tertiaryContainer: "#d9e7cb",
-    onSurface: "#201a17",
-    onSurfaceVariant: "#51443d",
-    outline: "#d6c4bb",
-  },
-  tech: {
-    background: "#edf3f1",
-    surface: "#f7fffc",
-    surfaceHigh: "#dfe9e6",
-    primary: "#25665f",
-    primaryContainer: "#a9f2e7",
-    onPrimaryContainer: "#00201d",
-    secondary: "#4a6360",
-    tertiaryContainer: "#cde5ff",
-    onSurface: "#171d1b",
-    onSurfaceVariant: "#3f4947",
-    outline: "#bdcac6",
-  },
-  guide: {
-    background: "#eef2f8",
-    surface: "#f9f9ff",
-    surfaceHigh: "#e2e7f0",
-    primary: "#405f91",
-    primaryContainer: "#d6e3ff",
-    onPrimaryContainer: "#001b3e",
-    secondary: "#565f71",
-    tertiaryContainer: "#f5d9ff",
-    onSurface: "#191c20",
-    onSurfaceVariant: "#43474e",
-    outline: "#c3c6cf",
-  },
+/**
+ * Material 3 字阶。数值是官方 token 乘以 1.4：预览图会被社交平台缩到
+ * 一半左右显示，直接用界面尺寸会看不清，但字号之间的比例、行高和字距关系保持不变。
+ */
+const TYPE = {
+  displayLarge: { fontSize: 80, lineHeight: 1.12, letterSpacing: -2.8 },
+  displayMedium: { fontSize: 63, lineHeight: 1.16, letterSpacing: -1.4 },
+  displaySmall: { fontSize: 50, lineHeight: 1.24, letterSpacing: 0 },
+  headlineSmall: { fontSize: 34, lineHeight: 1.33, letterSpacing: 0 },
+  titleLarge: { fontSize: 31, lineHeight: 1.27, letterSpacing: 0 },
+  bodyLarge: { fontSize: 25, lineHeight: 1.5, letterSpacing: 0.7 },
+  labelLarge: { fontSize: 20, lineHeight: 1.43, letterSpacing: 0.14 },
 } as const;
 
-const fontData = readFile(join(process.cwd(), "src/assets/og/NotoSansSC-Regular.ttf"));
+/** Material 3 形状标度，同样按 1.4 放大（extra-large 28 → 40，等等）。 */
+const SHAPE = {
+  medium: 17,
+  large: 22,
+  extraLarge: 40,
+  extraExtraLarge: 56,
+  full: 999,
+} as const;
 
-function selectPalette(categories: string[] = []) {
-  if (categories.includes("随笔")) return palettes.journal;
-  if (categories.includes("Guide")) return palettes.guide;
-  return palettes.tech;
+const fontRegular = readFile(join(process.cwd(), "src/assets/og/NotoSansSC-Regular.ttf"));
+const fontMedium = readFile(join(process.cwd(), "src/assets/og/NotoSansSC-Medium.ttf"));
+const brandMark = readFile(join(process.cwd(), "public/favicon.png"));
+
+/**
+ * 配色表由 MD3 官方算法从主题的 colorPicker.presetColors 预生成
+ * （见 scripts/build-og-palettes.mjs）。按分类名做确定性取模：新分类会自动
+ * 分到一个颜色，同一分类每次构建结果一致。取模方式与 PostCard 挑占位色一致。
+ */
+function paletteForCategory(categories: string[] = []): OgPalette {
+  const key = categories[0];
+  if (!key) return OG_PALETTES[0];
+  const sum = [...key].reduce((total, character) => total + (character.codePointAt(0) ?? 0), 0);
+  return OG_PALETTES[sum % OG_PALETTES.length];
 }
 
-function shorten(value: string, maxLength: number) {
+/** 把 #rrggbb 转成带透明度的 rgba()，用于状态层和描边。 */
+function withAlpha(hex: string, alpha: number) {
+  const value = Number.parseInt(hex.slice(1), 16);
+  const r = (value >> 16) & 0xff;
+  const g = (value >> 8) & 0xff;
+  const b = value & 0xff;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/** 卡片内容区宽度，文本装配以此为准。 */
+const CONTENT_WIDTH = WIDTH - 40 * 2 - 56 * 2;
+
+/** 全角字符按 1em 估宽，其余按 0.55em——用来估算折行足够精确。 */
+const emWidth = (character: string) =>
+  /[\u3000-\u9fff\uff00-\uffef]/.test(character) ? 1 : 0.55;
+
+interface FitStep {
+  style: { fontSize: number; lineHeight: number; letterSpacing: number };
+  maxLines: number;
+}
+
+/**
+ * 在给定字号档位里挑第一个能把文本放进 maxLines 行的档，并按宽度预算截断。
+ * 相比按字数截断，中英混排的标题不会再被切在半个单词上。
+ */
+function fitText(value: string, steps: readonly FitStep[]) {
   const characters = Array.from(value.trim());
-  return characters.length > maxLength
-    ? `${characters.slice(0, maxLength - 1).join("")}…`
-    : characters.join("");
+  const totalEm = characters.reduce((sum, character) => sum + emWidth(character), 0);
+
+  for (const step of steps) {
+    if (totalEm <= (step.maxLines * CONTENT_WIDTH) / step.style.fontSize) {
+      return { text: characters.join(""), style: step.style };
+    }
+  }
+
+  // 所有档位都放不下：用最小档，按宽度预算截断，并给省略号留出位置。
+  const last = steps[steps.length - 1];
+  const budgetEm = (last.maxLines * CONTENT_WIDTH) / last.style.fontSize - 1.2;
+  let used = 0;
+  const kept: string[] = [];
+  for (const character of characters) {
+    used += emWidth(character);
+    if (used > budgetEm) break;
+    kept.push(character);
+  }
+  return { text: `${kept.join("").trimEnd()}…`, style: last.style };
 }
 
 function formatDate(date: Date) {
@@ -81,71 +112,43 @@ function formatDate(date: Date) {
   return `${year}.${month}.${day}`;
 }
 
-function titleSize(title: string) {
-  const length = Array.from(title).length;
-  if (length > 34) return 48;
-  if (length > 22) return 56;
-  return 66;
-}
+/** 标题在 display 三档之间降级；短标题给两行，长标题放宽到三行。 */
+const TITLE_STEPS = [
+  { style: TYPE.displayLarge, maxLines: 2 },
+  { style: TYPE.displayMedium, maxLines: 2 },
+  { style: TYPE.displaySmall, maxLines: 3 },
+] as const;
 
-function CatMark({ color, surface }: { color: string; surface: string }) {
-  return (
-    <div style={{ position: "relative", display: "flex", width: 66, height: 62 }}>
-      <div style={{ position: "absolute", left: 7, top: 2, width: 24, height: 24, borderRadius: 5, background: color, transform: "rotate(45deg)" }} />
-      <div style={{ position: "absolute", right: 7, top: 2, width: 24, height: 24, borderRadius: 5, background: color, transform: "rotate(45deg)" }} />
-      <div style={{ position: "absolute", left: 4, top: 13, display: "flex", alignItems: "center", justifyContent: "center", width: 58, height: 48, borderRadius: 22, background: color }}>
-        <div style={{ display: "flex", gap: 15, marginTop: 2 }}>
-          <div style={{ width: 6, height: 9, borderRadius: 8, background: surface }} />
-          <div style={{ width: 6, height: 9, borderRadius: 8, background: surface }} />
-        </div>
-      </div>
-    </div>
-  );
-}
+/** 摘要固定 body-large，最多两行。 */
+const DESCRIPTION_STEPS = [{ style: TYPE.bodyLarge, maxLines: 2 }] as const;
 
 export async function generateOgImage(input: OgImageInput) {
-  const palette = selectPalette(input.categories);
-  const title = shorten(input.title, 48);
-  const description = shorten(input.description || "一篇来自 Vahiru Blog 的文章。", 96);
+  const color = paletteForCategory(input.categories);
+  const title = fitText(input.title, TITLE_STEPS);
+  const description = fitText(
+    input.description || "一篇来自 Vahiru Blog 的文章。",
+    DESCRIPTION_STEPS,
+  );
   const category = input.categories?.[0] || "文章";
   const tags = (input.tags || []).slice(0, 3);
-  const texture = Array.from({ length: 64 }, (_, index) => ({
-    left: 18 + ((index * 173) % 1160),
-    top: 14 + ((index * 97) % 600),
-    size: index % 5 === 0 ? 3 : 2,
-    opacity: index % 3 === 0 ? 0.12 : 0.07,
-  }));
+  const brandMarkSrc = `data:image/png;base64,${(await brandMark).toString("base64")}`;
 
   const svg = await satori(
     <div
       lang="zh-CN"
       style={{
-        position: "relative",
         display: "flex",
         width: WIDTH,
         height: HEIGHT,
-        padding: 42,
-        background: palette.background,
-        color: palette.onSurface,
+        padding: 40,
+        background: color.page,
         fontFamily: "Noto Sans SC",
-        overflow: "hidden",
       }}
     >
-      {texture.map((dot) => (
-        <div
-          style={{
-            position: "absolute",
-            left: dot.left,
-            top: dot.top,
-            width: dot.size,
-            height: dot.size,
-            borderRadius: 4,
-            background: palette.primary,
-            opacity: dot.opacity,
-          }}
-        />
-      ))}
-
+      {/*
+        整张卡片沿用站点首页 hero 的构成：整块着色的圆角面板、非对称圆角、
+        右下角一圈描边圆环。底色用 secondary-container 以保证任何色相都柔和。
+      */}
       <div
         style={{
           position: "relative",
@@ -153,57 +156,142 @@ export async function generateOgImage(input: OgImageInput) {
           flexDirection: "column",
           width: "100%",
           height: "100%",
-          padding: "34px 42px 32px",
-          border: `1px solid ${palette.outline}`,
-          borderRadius: 34,
-          background: palette.surface,
-          boxShadow: "0 12px 30px rgba(45, 30, 22, 0.10)",
+          padding: "48px 56px",
+          borderTopLeftRadius: SHAPE.extraExtraLarge,
+          borderTopRightRadius: SHAPE.extraExtraLarge,
+          borderBottomRightRadius: SHAPE.large,
+          borderBottomLeftRadius: SHAPE.extraExtraLarge,
+          background: color.surface,
+          color: color.onSurface,
           overflow: "hidden",
         }}
       >
-        <div style={{ position: "absolute", right: 0, top: 0, width: 250, height: 12, borderBottomLeftRadius: 12, background: palette.primaryContainer }} />
-        <div style={{ position: "absolute", right: 0, bottom: 0, width: 180, height: 12, borderTopLeftRadius: 12, background: palette.tertiaryContainer }} />
-
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+        <div
+          style={{
+            position: "absolute",
+            right: -170,
+            bottom: -400,
+            width: 620,
+            height: 620,
+            borderRadius: SHAPE.full,
+            border: `2px solid ${withAlpha(color.onSurface, 0.14)}`,
+          }}
+        />
+        {/* 顶部：品牌标识 + 分类 */}
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-            <div style={{ display: "flex", width: 74, height: 74, alignItems: "center", justifyContent: "center", borderRadius: 24, background: palette.primaryContainer }}>
-              <CatMark color={palette.primary} surface={palette.surface} />
+            <div
+              style={{
+                display: "flex",
+                width: 76,
+                height: 76,
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: SHAPE.large,
+                background: color.pill,
+                overflow: "hidden",
+              }}
+            >
+              <img src={brandMarkSrc} width={76} height={76} />
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: 25, color: palette.primary }}>Vahiru Blog</div>
-              <div style={{ marginTop: 2, fontSize: 16, color: palette.onSurfaceVariant, letterSpacing: 1.2 }}>STORIES · NOTES · LIFE</div>
+              <div style={{ ...TYPE.titleLarge, fontWeight: 500 }}>Vahiru Blog</div>
+              <div
+                style={{
+                  ...TYPE.labelLarge,
+                  marginTop: 2,
+                  color: withAlpha(color.onSurface, 0.68),
+                }}
+              >
+                vahiru.is-cute.cat
+              </div>
             </div>
           </div>
-          <div style={{ display: "flex", padding: "10px 18px", borderRadius: 18, background: palette.surfaceHigh, color: palette.secondary, fontSize: 18 }}>
-            vahiru.is-cute.cat
+
+          <div
+            style={{
+              display: "flex",
+              padding: "13px 26px",
+              borderRadius: SHAPE.full,
+              background: color.pill,
+              color: color.accent,
+              ...TYPE.labelLarge,
+              fontWeight: 500,
+              letterSpacing: 1.6,
+            }}
+          >
+            {category}
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", width: 930, paddingTop: 16 }}>
-          <div style={{ fontSize: titleSize(title), lineHeight: 1.18, letterSpacing: 0, color: palette.onSurface }}>
-            {title}
-          </div>
-          <div style={{ width: 72, height: 6, margin: "22px 0 18px", borderRadius: 6, background: palette.primary }} />
-          <div style={{ fontSize: 25, lineHeight: 1.5, color: palette.onSurfaceVariant }}>
-            {description}
+        {/* 中部：标题 + 摘要 */}
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            justifyContent: "center",
+            width: CONTENT_WIDTH,
+          }}
+        >
+          <div style={{ ...title.style, fontWeight: 500 }}>{title.text}</div>
+          <div
+            style={{
+              ...description.style,
+              marginTop: 24,
+              color: withAlpha(color.onSurface, 0.78),
+            }}
+          >
+            {description.text}
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+        {/* 底部：标签 + 日期 */}
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            paddingTop: 28,
+            borderTop: `1px solid ${withAlpha(color.onSurface, 0.16)}`,
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ display: "flex", padding: "10px 16px", borderRadius: 14, background: palette.primaryContainer, color: palette.onPrimaryContainer, fontSize: 18 }}>
-              {category}
-            </div>
             {tags.map((tag) => (
-              <div style={{ display: "flex", padding: "9px 14px", border: `1px solid ${palette.outline}`, borderRadius: 14, color: palette.secondary, fontSize: 17 }}>
-                #{tag}
+              <div
+                style={{
+                  display: "flex",
+                  padding: "10px 20px",
+                  border: `1.5px solid ${withAlpha(color.onSurface, 0.28)}`,
+                  borderRadius: SHAPE.full,
+                  color: withAlpha(color.onSurface, 0.82),
+                  ...TYPE.labelLarge,
+                }}
+              >
+                {tag}
               </div>
             ))}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 18, color: palette.onSurfaceVariant }}>
-            <span style={{ fontSize: 17 }}>written by Vahiru</span>
-            <span style={{ width: 5, height: 5, borderRadius: 5, background: palette.primary }} />
-            <span style={{ fontSize: 20 }}>{formatDate(input.date)}</span>
+          <div
+            style={{
+              ...TYPE.titleLarge,
+              fontWeight: 500,
+              letterSpacing: 0.8,
+              color: color.accent,
+            }}
+          >
+            {formatDate(input.date)}
           </div>
         </div>
       </div>
@@ -212,18 +300,14 @@ export async function generateOgImage(input: OgImageInput) {
       width: WIDTH,
       height: HEIGHT,
       fonts: [
-        {
-          name: "Noto Sans SC",
-          data: await fontData,
-          weight: 400,
-          style: "normal",
-        },
+        { name: "Noto Sans SC", data: await fontRegular, weight: 400, style: "normal" },
+        { name: "Noto Sans SC", data: await fontMedium, weight: 500, style: "normal" },
       ],
     },
   );
 
   return new Resvg(svg, {
-    background: palette.background,
+    background: color.page,
     fitTo: { mode: "width", value: WIDTH },
   }).render().asPng();
 }
