@@ -6,4 +6,16 @@
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   X-Permitted-Cross-Domain-Policies: none
   Strict-Transport-Security: max-age=31536000
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' https:; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; frame-src https://player.bilibili.com https://www.youtube-nocookie.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; media-src 'self' https:; connect-src 'self'; frame-src https://player.bilibili.com https://www.youtube-nocookie.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests
+
+# /_astro/ 下的文件名都带内容哈希，内容变了地址就会变，可以永久强缓存。
+# 字体子集也在这里，回访时不会再请求。
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 图片文件名不带哈希，用一个月的缓存加 stale-while-revalidate，换图后最迟一天生效。
+/images/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/favicon.png
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
