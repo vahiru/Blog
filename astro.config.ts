@@ -35,6 +35,8 @@ export default defineConfig({
 
                 // 静态资源和主题生成的端点路径。
                 favicon: "/favicon.png",
+                // 品牌标识，用于页脚和手机端顶栏。复用 favicon：浏览器已为标签页图标缓存了它，不产生额外请求。
+                logo: "/favicon.png",
                 // 社交预览图。放在 src/assets/images/ 下，会被自动压到 1200px 宽的 JPEG。
                 // （原来指向的 default-og.jpg 其实是一张 404 插画。）
                 defaultImage: "/images/cover.jpg",
@@ -74,23 +76,28 @@ export default defineConfig({
                 footer: {
                     slogan: "愿你能被这个世界温柔以待，愿你我皆能在时光中安然前行。",
                     socialTitle: "找到我",
+                    themeCreditLabel: "主题",
+                    copyrightTemplate: "© {year} {author}",
                     links: [
                         {
                             label: "GitHub",
+                            icon: "code",
                             href: "https://github.com/vahiru",
                             external: true,
                         },
                         {
                             label: "X (Twitter)",
+                            icon: "alternate_email",
                             href: "https://x.com/nekovahiru",
                             external: true,
                         },
                         {
                             label: "Telegram",
+                            icon: "send",
                             href: "https://t.me/vahiru",
                             external: true,
                         },
-                        { label: "博客 RSS", href: "/rss.xml" },
+                        { label: "博客 RSS", href: "/rss.xml", icon: "rss_feed" },
                     ],
                 },
 
@@ -131,6 +138,7 @@ export default defineConfig({
                     tagEyebrow: "TAG · 标签",
                     taxonomyDescriptionTemplate: "浏览收录在「{name}」下的全部文章。",
                     backToArchives: "返回全部归档",
+                    backToTop: "回到顶部",
                     paginationLabel: "分页导航",
                     paginationPrevious: "上一页",
                     paginationNext: "下一页",
