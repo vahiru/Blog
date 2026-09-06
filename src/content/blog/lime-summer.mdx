@@ -10,8 +10,6 @@ draft: false
 import Quot from 'astro-mochi-tones:components/express/Quot.astro';
 import Note from 'astro-mochi-tones:components/express/Note.astro';
 import Emp from 'astro-mochi-tones:components/express/Emp.astro';
-import Timeline from 'astro-mochi-tones:components/data/Timeline.astro';
-import TimelineNode from 'astro-mochi-tones:components/data/TimelineNode.astro';
 import GhCard from 'astro-mochi-tones:components/data/GhCard.astro';
 
 <Quot style="classic">
@@ -32,25 +30,11 @@ import GhCard from 'astro-mochi-tones:components/data/GhCard.astro';
 
 ## 旅途
 
-不可否认，这是我十八年里最多彩的一段日子。见了许多网友，了却了许多心愿。
+不可否认，这是我十八年里最多彩的一段日子。见了许多网友，了却了许多心愿。拉着高中唯一的挚友去了 BilibiliWorld，那是他第一次出远门，前后订酒店、约景点、带路，像带小孩一样，但依旧很快乐。第一次向别人的项目提交 pull request，第一次完整地走完一遍 git 协作流程，第一次维护一个真实地被很多人使用的开源项目。
 
-<Timeline label="这个夏天的几个第一次">
-  <TimelineNode date="BilibiliWorld">
-    拉着高中唯一的挚友去了 BilibiliWorld，那是他第一次出远门，前后订酒店、约景点、带路，像带小孩一样，但依旧很快乐。
-  </TimelineNode>
+<GhCard repo="vahiru/gaokun-android" />
 
-  <TimelineNode date="开源">
-    第一次向别人的项目提交 pull request，第一次完整地走完一遍 git 协作流程，第一次维护一个真实地被很多人使用的开源项目。
-
-    <GhCard repo="vahiru/gaokun-android" />
-  </TimelineNode>
-
-  <TimelineNode date="生活">
-    最重要的是，第一次和我最特别的人一起生活。
-  </TimelineNode>
-</Timeline>
-
-在此郑重地向你道谢：我学到了很多东西，也第一次知道了开心而自由的生活是什么样子。谢谢你的关心和包容。
+最重要的是，第一次和我最特别的人一起生活。在此郑重地向你道谢：我学到了很多东西，也第一次知道了开心而自由的生活是什么样子。谢谢你的关心和包容。
 
 <Note color="primary" icon="cake">
   抱歉忘了你的生日，两天后才后知后觉，一直没好意思开口，在这里补一句——生日快乐。
