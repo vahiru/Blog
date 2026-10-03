@@ -32,5 +32,11 @@ export const friendsData: Friend[] = [
     desc: "我们生活在大地上，但我们的梦想超越天空", 
     avatar: "https://lfs.libmbr.com/assets/pics/LG4v5Ravatar180px.webp",
     url: "https://www.libmbr.com/"
+    },
+    {
+    name: "lemonmiaow",
+    desc: "I'm Lolicon.",
+    avatar: "https://avatars.githubusercontent.com/u/61692393?v=4",
+    url: "https://tail.lemonmiaow.xyz/about/"
     }
 ];
