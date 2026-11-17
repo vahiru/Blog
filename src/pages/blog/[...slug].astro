@@ -336,8 +336,8 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
   .code-lang {
     color: var(--md-sys-color-on-surface-variant);
     font-size: var(--md-sys-typescale-label-medium-size);
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-weight: var(--md-sys-typescale-label-medium-weight);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
   }
 
   .copy-btn {
@@ -353,12 +353,17 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
   }
 
   .copy-btn:hover {
-    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+    background: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
+  }
+
+  .copy-btn:active {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 10%, transparent);
   }
 
   .copy-btn:disabled {
+    background: transparent;
     cursor: wait;
-    opacity: 0.72;
+    opacity: var(--md-sys-state-disabled-opacity);
   }
 
   .copy-btn .material-symbols-rounded {
@@ -393,7 +398,6 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     color: var(--md-sys-color-on-surface-variant);
     content: counter(code-line);
     counter-increment: code-line;
-    opacity: 0.56;
     text-align: right;
     user-select: none;
   }
@@ -506,7 +510,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 
   .typo th {
     background: var(--md-sys-color-surface-container-high);
-    font-weight: 600;
+    font-weight: var(--md-sys-typescale-title-medium-weight);
   }
 
   .typo hr {
@@ -553,7 +557,8 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
   .post-card {
     padding: clamp(24px, 5vw, 56px);
     border-radius: var(--md-sys-shape-corner-extra-large-increased);
-    background: var(--md-sys-color-surface-container-lowest);
+    /* M3 elevated card：surface-container-low + level1 阴影。 */
+    background: var(--md-sys-color-surface-container-low);
     box-shadow: var(--md-sys-elevation-level1);
   }
 
@@ -577,6 +582,10 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 
   .back-link:hover {
     background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+  }
+
+  .back-link:active {
+    background: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent);
   }
 
   .cover-wrapper,
@@ -634,9 +643,8 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 
   .title-banner span {
     font-size: var(--md-sys-typescale-label-medium-size);
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    opacity: 0.7;
+    font-weight: var(--md-sys-typescale-label-medium-weight);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
   }
 
   .header-text {
@@ -647,18 +655,18 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     margin: 0 0 8px;
     color: var(--md-sys-color-primary);
     font-size: var(--md-sys-typescale-label-medium-size);
-    font-weight: 700;
-    letter-spacing: 0.16em;
+    font-weight: var(--md-sys-typescale-label-medium-weight);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
   }
 
   h1 {
     margin: 0;
     color: var(--md-sys-color-on-surface);
     font-family: var(--md-ref-typeface-brand);
-    font-size: clamp(34px, 5vw, 52px);
-    line-height: 1.13;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-size: var(--md-sys-typescale-display-small-size);
+    line-height: var(--md-sys-typescale-display-small-line-height);
+    font-weight: var(--md-sys-typescale-display-small-weight);
+    letter-spacing: var(--md-sys-typescale-display-small-tracking);
     text-wrap: balance;
   }
 
@@ -711,22 +719,27 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     gap: 8px;
   }
 
+  /* M3 assist chip：32dp 高、描边、未选中态；secondary-container 填充留给“已选中”。 */
   .tag-chip {
-    min-height: 36px;
-    padding: 7px 14px;
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    padding: 0 16px;
+    border: 1px solid var(--md-sys-color-outline-variant);
     border-radius: var(--md-sys-shape-corner-small);
-    background: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
     font-size: var(--md-sys-typescale-label-large-size);
     font-weight: var(--md-sys-typescale-label-large-weight);
-    transition:
-      border-radius var(--md-sys-motion-duration-fast) var(--md-sys-motion-easing-spatial),
-      background-color var(--md-sys-motion-duration-fast) var(--md-sys-motion-easing-effects);
+    transition: background-color var(--md-sys-motion-duration-fast) var(--md-sys-motion-easing-effects);
   }
 
   .tag-chip:hover {
-    border-radius: var(--md-sys-shape-corner-full);
-    background: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 16%, var(--md-sys-color-secondary-container));
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+  }
+
+  .tag-chip:active {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, transparent);
   }
 
   .post-nav {
@@ -745,14 +758,15 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     padding: 22px 24px;
     border-radius: var(--md-sys-shape-corner-extra-large);
     background: var(--md-sys-color-surface-container-low);
-    transition:
-      translate var(--md-sys-motion-duration-fast) var(--md-sys-motion-easing-spatial),
-      background-color var(--md-sys-motion-duration-fast) var(--md-sys-motion-easing-effects);
+    transition: background-color var(--md-sys-motion-duration-fast) var(--md-sys-motion-easing-effects);
   }
 
   .nav-link:hover {
-    translate: 0 -2px;
-    background: var(--md-sys-color-surface-container-high);
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, var(--md-sys-color-surface-container-low));
+  }
+
+  .nav-link:active {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, var(--md-sys-color-surface-container-low));
   }
 
   .nav-label {
@@ -762,7 +776,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     margin-bottom: 6px;
     color: var(--md-sys-color-primary);
     font-size: var(--md-sys-typescale-label-medium-size);
-    font-weight: 600;
+    font-weight: var(--md-sys-typescale-label-medium-weight);
   }
 
   .nav-label md-icon {
@@ -775,7 +789,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     color: var(--md-sys-color-on-surface);
     font-size: var(--md-sys-typescale-title-medium-size);
     line-height: var(--md-sys-typescale-title-medium-line-height);
-    font-weight: 600;
+    font-weight: var(--md-sys-typescale-title-medium-weight);
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
@@ -804,7 +818,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     margin-bottom: 14px;
     color: var(--md-sys-color-on-surface);
     font-size: var(--md-sys-typescale-title-small-size);
-    font-weight: 600;
+    font-weight: var(--md-sys-typescale-title-small-weight);
   }
 
   .toc-header md-icon {
@@ -833,8 +847,11 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
   }
 
   .toc-sticky a:hover {
-    background: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
+    background: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
+  }
+
+  .toc-sticky a:active {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 10%, transparent);
   }
 
   .toc-sticky .depth-3 {
@@ -845,6 +862,14 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     margin: 0;
     color: var(--md-sys-color-on-surface-variant);
     font-size: var(--md-sys-typescale-body-small-size);
+  }
+
+  @media (min-width: 840px) {
+    h1 {
+      font-size: var(--md-sys-typescale-display-medium-size);
+      line-height: var(--md-sys-typescale-display-medium-line-height);
+      letter-spacing: var(--md-sys-typescale-display-medium-tracking);
+    }
   }
 
   @media (min-width: 1180px) {

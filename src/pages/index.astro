@@ -192,8 +192,9 @@ const stats = {
     border-radius: var(--md-sys-shape-corner-full);
     background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 72%, transparent);
     color: var(--md-sys-color-on-primary-container);
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    font-size: var(--md-sys-typescale-label-large-size);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
   }
 
   .hero-kicker md-icon {
@@ -207,17 +208,16 @@ const stats = {
     max-width: 760px;
     margin: 22px 0 16px;
     font-family: var(--md-ref-typeface-brand);
-    font-size: clamp(40px, 5.2vw, 64px);
-    font-weight: 500;
-    letter-spacing: -0.035em;
-    line-height: 1.08;
+    font-size: var(--md-sys-typescale-display-large-size);
+    font-weight: var(--md-sys-typescale-display-large-weight);
+    letter-spacing: var(--md-sys-typescale-display-large-tracking);
+    line-height: var(--md-sys-typescale-display-large-line-height);
   }
 
   .hero-description {
     max-width: 640px;
     margin: 0;
     color: var(--md-sys-color-on-primary-container);
-    opacity: 0.82;
   }
 
   .hero-actions {
@@ -265,7 +265,7 @@ const stats = {
   .visual-card-main span {
     color: var(--md-sys-color-on-surface-variant);
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-    font-size: 13px;
+    font-size: var(--md-sys-typescale-label-medium-size);
   }
 
   .visual-card-palette,
@@ -327,8 +327,9 @@ const stats = {
     display: block;
     margin-bottom: 4px;
     color: var(--md-sys-color-primary);
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    font-size: var(--md-sys-typescale-label-large-size);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
   }
 
   .section-heading h2,
@@ -345,11 +346,15 @@ const stats = {
     padding: 0 14px;
     border-radius: var(--md-sys-shape-corner-full);
     color: var(--md-sys-color-primary);
-    font-weight: 700;
+    font-weight: var(--md-sys-typescale-label-large-weight);
   }
 
   .section-link:hover {
     background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+  }
+
+  .section-link:active {
+    background: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent);
   }
 
   .section-link md-icon {
@@ -420,6 +425,8 @@ const stats = {
   .stat-item strong {
     color: var(--md-sys-color-primary);
     font-size: var(--md-sys-typescale-title-large-size);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+    line-height: var(--md-sys-typescale-title-large-line-height);
   }
 
   .stat-item span {
@@ -501,6 +508,12 @@ const stats = {
   }
 
   @media (max-width: 839px) {
+    .hero-title {
+      font-size: var(--md-sys-typescale-display-medium-size);
+      letter-spacing: var(--md-sys-typescale-display-medium-tracking);
+      line-height: var(--md-sys-typescale-display-medium-line-height);
+    }
+
     .hero {
       min-height: 0;
       grid-template-columns: 1fr;
@@ -520,7 +533,9 @@ const stats = {
 
     .hero-title {
       margin-top: 18px;
-      font-size: clamp(36px, 12vw, 48px);
+      font-size: var(--md-sys-typescale-display-small-size);
+      letter-spacing: var(--md-sys-typescale-display-small-tracking);
+      line-height: var(--md-sys-typescale-display-small-line-height);
     }
 
     .home-grid {

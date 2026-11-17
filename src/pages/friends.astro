@@ -140,8 +140,8 @@ const friends = friendsData.filter(
     margin: 2px 0 6px;
     color: var(--md-sys-color-primary);
     font-size: var(--md-sys-typescale-label-medium-size);
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-weight: var(--md-sys-typescale-label-medium-weight);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
   }
 
   h1 {
@@ -187,7 +187,7 @@ const friends = friendsData.filter(
     background: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
     font-size: var(--md-sys-typescale-label-medium-size);
-    font-weight: 600;
+    font-weight: var(--md-sys-typescale-label-medium-weight);
   }
 
   .friends-grid {
@@ -214,9 +214,8 @@ const friends = friendsData.filter(
       box-shadow var(--md-sys-motion-duration-fast) var(--md-sys-motion-easing-effects);
   }
 
+  /* M3 卡片悬停：state layer 由 md-ripple 提供，这里只抬升一级阴影。 */
   .friend-card:hover {
-    translate: 0 -3px;
-    background: var(--md-sys-color-surface-container-low);
     box-shadow: var(--md-sys-elevation-level1);
   }
 
@@ -267,7 +266,7 @@ const friends = friendsData.filter(
     overflow: hidden;
     font-size: var(--md-sys-typescale-title-medium-size);
     line-height: var(--md-sys-typescale-title-medium-line-height);
-    font-weight: 600;
+    font-weight: var(--md-sys-typescale-title-medium-weight);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -313,7 +312,6 @@ const friends = friendsData.filter(
 
   .application-card > p {
     margin: 12px 0 0;
-    opacity: 0.82;
   }
 
   .application-card ul {
